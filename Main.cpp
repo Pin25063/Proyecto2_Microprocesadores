@@ -3,7 +3,7 @@
 
 void mostrar_instrucciones() {
     int yMax, xMax;
-    getmaxyx(stdscr, yMax, xMax); //Funciona para obtener la dimension de la terminal
+    getmaxyx(stdscr, yMax, xMax); 
 
     WINDOW *inst_win = newwin(yMax - 4, xMax - 10, 2, 5);
     box(inst_win, 0, 0);
@@ -30,9 +30,16 @@ void mostrar_puntajes_destacados() {
     int yMax, xMax;
     getmaxyx(stdscr, yMax, xMax);
 
-    // Crear la ventana base sin bordes por ahora
     WINDOW *score_win = newwin(yMax - 4, xMax - 10, 2, 5);
+    box(score_win, 0, 0); // Se agrega el borde
     keypad(score_win, TRUE);
+
+    // Título y encabezados
+    mvwprintw(score_win, 1, (xMax - 10) / 2 - 9, "PUNTAJES DESTACADOS");
+    mvwhline(score_win, 2, 1, ACS_HLINE, xMax - 12);
+
+    mvwprintw(score_win, 4, (xMax - 10) / 2 - 12, "JUGADOR         PUNTAJE");
+    mvwhline(score_win, 5, (xMax - 10) / 2 - 12, '-', 23);
 
     mvwprintw(score_win, yMax - 7, (xMax - 10) / 2 - 18, "Presiona cualquier tecla para volver al menu");
 
@@ -42,16 +49,14 @@ void mostrar_puntajes_destacados() {
 }
 
 int main() {
-    // Inicializar ncurses 
     initscr();
-    cbreak();             // Desactiva el buffering de línea
-    noecho();             // No muestra las teclas que se presionen
-    curs_set(0);          // Esconde el cursor
+    cbreak();             
+    noecho();             
+    curs_set(0);          
 
     int opcion;
     bool salir = false;
 
-    // Menú temporal para probar las pantallas integradas
     while(!salir) {
         clear();
         mvprintw(2, 5, "MENU PRINCIPAL ZELDA 1");
@@ -76,7 +81,6 @@ int main() {
         }
     }
 
-    // Finalizar ncurses
     endwin();
     return 0;
 }
