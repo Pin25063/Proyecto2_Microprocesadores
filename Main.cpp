@@ -31,15 +31,21 @@ void mostrar_puntajes_destacados() {
     getmaxyx(stdscr, yMax, xMax);
 
     WINDOW *score_win = newwin(yMax - 4, xMax - 10, 2, 5);
-    box(score_win, 0, 0); // Se agrega el borde
+    box(score_win, 0, 0);
     keypad(score_win, TRUE);
 
-    // Título y encabezados
     mvwprintw(score_win, 1, (xMax - 10) / 2 - 9, "PUNTAJES DESTACADOS");
     mvwhline(score_win, 2, 1, ACS_HLINE, xMax - 12);
 
     mvwprintw(score_win, 4, (xMax - 10) / 2 - 12, "JUGADOR         PUNTAJE");
     mvwhline(score_win, 5, (xMax - 10) / 2 - 12, '-', 23);
+
+    // Datos simulados agregados a la tabla
+    mvwprintw(score_win, 6, (xMax - 10) / 2 - 12, "1. Jugador 1         9500 pts");
+    mvwprintw(score_win, 7, (xMax - 10) / 2 - 12, "2. Jugador 2         8200 pts");
+    mvwprintw(score_win, 8, (xMax - 10) / 2 - 12, "3. Jugador 3         7100 pts");
+    mvwprintw(score_win, 9, (xMax - 10) / 2 - 12, "4. Jugador 4         5000 pts");
+    mvwprintw(score_win, 10, (xMax - 10) / 2 - 12, "5. Jugador 5         4300 pts");
 
     mvwprintw(score_win, yMax - 7, (xMax - 10) / 2 - 18, "Presiona cualquier tecla para volver al menu");
 
@@ -59,7 +65,7 @@ int main() {
 
     while(!salir) {
         clear();
-        mvprintw(2, 5, "MENU PRINCIPAL ZELDA 1");
+        mvprintw(2, 5, "=== MENU PRINCIPAL ZELDA 1 ===");
         mvprintw(4, 5, "1. Ver Instrucciones");
         mvprintw(5, 5, "2. Ver Puntajes Destacados");
         mvprintw(6, 5, "3. Salir");
