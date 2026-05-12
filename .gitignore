@@ -1,0 +1,8 @@
+.vscode/
+.DS_Store
+Thumbs.db
+*.o
+*.out
+*.exe
+*.app
+juego_zelda
