@@ -19,21 +19,62 @@ void mostrar_instrucciones() {
     mvwprintw(inst_win, 10, 5, "K           - Usar objeto secundario");
     mvwprintw(inst_win, 12, 5, "ESC o Q     - Salir de la partida");
 
-    mvwprintw(inst_win, yMax - 7, (xMax - 10) / 2 - 12, "Presiona cualquier tecla para volver");
+    mvwprintw(inst_win, yMax - 7, (xMax - 10) / 2 - 18, "Presiona cualquier tecla para volver al menu");
 
     wrefresh(inst_win);
     wgetch(inst_win); 
     delwin(inst_win);
 }
 
+void mostrar_puntajes_destacados() {
+    int yMax, xMax;
+    getmaxyx(stdscr, yMax, xMax);
+
+    // Crear la ventana base sin bordes por ahora
+    WINDOW *score_win = newwin(yMax - 4, xMax - 10, 2, 5);
+    keypad(score_win, TRUE);
+
+    mvwprintw(score_win, yMax - 7, (xMax - 10) / 2 - 18, "Presiona cualquier tecla para volver al menu");
+
+    wrefresh(score_win);
+    wgetch(score_win); 
+    delwin(score_win);
+}
+
 int main() {
     // Inicializar ncurses 
     initscr();
     cbreak();             // Desactiva el buffering de línea
-    noecho();             // No muestra las teclas que se precionen
+    noecho();             // No muestra las teclas que se presionen
     curs_set(0);          // Esconde el cursor
 
-    mostrar_instrucciones();
+    int opcion;
+    bool salir = false;
+
+    // Menú temporal para probar las pantallas integradas
+    while(!salir) {
+        clear();
+        mvprintw(2, 5, "MENU PRINCIPAL ZELDA 1");
+        mvprintw(4, 5, "1. Ver Instrucciones");
+        mvprintw(5, 5, "2. Ver Puntajes Destacados");
+        mvprintw(6, 5, "3. Salir");
+        mvprintw(8, 5, "Selecciona una opcion (1-3): ");
+        refresh();
+
+        opcion = getch();
+
+        switch(opcion) {
+            case '1':
+                mostrar_instrucciones();
+                break;
+            case '2':
+                mostrar_puntajes_destacados();
+                break;
+            case '3':
+                salir = true;
+                break;
+        }
+    }
 
     // Finalizar ncurses
     endwin();
