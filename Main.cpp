@@ -24,9 +24,13 @@ void mostrar_instrucciones() {
 
     mvwprintw(inst_win, yMax - 7, (xMax - 10) / 2 - 18, "Presiona cualquier tecla para volver al menu");
 
-    wrefresh(inst_win);
     wgetch(inst_win); 
+    werase(inst_win);
+    wrefresh(inst_win);
     delwin(inst_win);
+
+    clear();
+    refresh();
 }
 
 void mostrar_puntajes_destacados() {
@@ -52,9 +56,13 @@ void mostrar_puntajes_destacados() {
 
     mvwprintw(score_win, yMax - 7, (xMax - 10) / 2 - 18, "Presiona cualquier tecla para volver al menu");
 
-    wrefresh(score_win);
     wgetch(score_win); 
+    werase(score_win);
+    wrefresh(score_win);
     delwin(score_win);
+
+    clear();
+    refresh();
 }
 
 void iniciar_juego() {
