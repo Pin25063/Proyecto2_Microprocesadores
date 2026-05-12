@@ -1,5 +1,8 @@
 #include <ncurses.h>
 #include <pthread.h> 
+#include <vector>
+#include <string>
+#include <fstream>
 
 void mostrar_instrucciones() {
     int yMax, xMax;
@@ -54,39 +57,112 @@ void mostrar_puntajes_destacados() {
     delwin(score_win);
 }
 
-int main() {
-    initscr();
-    cbreak();             
-    noecho();             
-    curs_set(0);          
+void iniciar_juego() {
+    clear();
+    attron(COLOR_PAIR(1));
+    mvprintw(10, 10, "INICIANDO JUEGO..."); //placeholder temporal
+    attroff(COLOR_PAIR(1));
+    refresh();
+    getch();
+}
 
-    int opcion;
-    bool salir = false;
+void menu_principal() {
+    const int TOTAL_OPCIONES = 4;
 
-    while(!salir) {
+    std::string opciones[TOTAL_OPCIONES] = {
+        "Iniciar Partida",
+        "Instrucciones",
+        "Puntajes Destacados",
+        "Salir"
+    };
+
+    int seleccion = 0;
+    int tecla;
+    bool ejecutando = true;
+
+    while (ejecutando) {
         clear();
-        mvprintw(2, 5, "=== MENU PRINCIPAL ZELDA 1 ===");
-        mvprintw(4, 5, "1. Ver Instrucciones");
-        mvprintw(5, 5, "2. Ver Puntajes Destacados");
-        mvprintw(6, 5, "3. Salir");
-        mvprintw(8, 5, "Selecciona una opcion (1-3): ");
-        refresh();
+        WINDOW *menu_win = newwin(18, 50, 4, 10);
+        box(menu_win, 0, 0);
 
-        opcion = getch();
+        int yMax, xMax;
+        getmaxyx(stdscr, yMax, xMax);
+        wattron(menu_win, COLOR_PAIR(1));
+        mvwprintw(menu_win, 2, 14, "THE LEGEND OF ZELDA");
+        wattroff(menu_win, COLOR_PAIR(1));
+        mvwprintw(menu_win, 4, 13, "Usa W/S para navegar");
 
-        switch(opcion) {
-            case '1':
-                mostrar_instrucciones();
+        for (int i = 0; i < TOTAL_OPCIONES; i++) {
+            if (i == seleccion) {
+                wattron(menu_win, COLOR_PAIR(2));
+                mvwprintw(menu_win, 7 + i * 2, 14, "> %s", opciones[i].c_str());
+                wattroff(menu_win, COLOR_PAIR(2));
+
+            } else {
+                mvwprintw(menu_win, 7 + i * 2, 16, "%s", opciones[i].c_str());
+            }
+        }
+
+        wrefresh(menu_win);
+        tecla = wgetch(menu_win);
+
+        switch (tecla) {
+            case 'w':
+            case 'W':
+                seleccion--; // se mueve hacia arriba
+                if (seleccion < 0)
+                    seleccion = TOTAL_OPCIONES - 1;
                 break;
-            case '2':
-                mostrar_puntajes_destacados();
+
+            case 's':
+            case 'S':
+                seleccion++; // se mueve hacia abajo
+                if (seleccion >= TOTAL_OPCIONES)
+                    seleccion = 0;
                 break;
-            case '3':
-                salir = true;
+
+            case 10: // enter en ASCII
+                switch (seleccion) {
+                    case 0:
+                        iniciar_juego();
+                        break;
+
+                    case 1:
+                        mostrar_instrucciones();
+                        break;
+
+                    case 2:
+                        mostrar_puntajes_destacados();
+                        break;
+
+                    case 3:
+                        ejecutando = false;
+                }
+
                 break;
         }
-    }
+        delwin(menu_win);
 
+    }
+}
+
+int main() {
+ // Inicializar ncurses 
+    initscr();
+    cbreak();             // Desactiva el buffering de línea
+    noecho();             // No muestra las teclas que se precionen
+    curs_set(0);          // Esconde el cursor
+    start_color();
+    use_default_colors();
+
+    // Colores
+    init_pair(1, COLOR_GREEN, -1);
+    init_pair(2, COLOR_YELLOW, -1);
+    init_pair(3, COLOR_CYAN, -1);
+
+    menu_principal();
+
+    // Finalizar ncurses
     endwin();
     return 0;
 }
