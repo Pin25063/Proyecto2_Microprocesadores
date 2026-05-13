@@ -90,24 +90,33 @@ void menu_principal() {
 
     while (ejecutando) {
         clear();
-        WINDOW *menu_win = newwin(18, 50, 4, 10);
+        WINDOW *menu_win = newwin(21, 50, 4, 10);
         box(menu_win, 0, 0);
 
         int yMax, xMax;
         getmaxyx(stdscr, yMax, xMax);
         wattron(menu_win, COLOR_PAIR(1));
-        mvwprintw(menu_win, 2, 14, "THE LEGEND OF ZELDA");
+        mvwprintw(menu_win, 2, 18, "THE LEGEND OF ");
+        mvwprintw(menu_win, 3, 6, "  _____  ______ _      _____          ");
+        mvwprintw(menu_win, 4, 6, " |__  / |  ____| |    |  __ \\   /\\    ");
+        mvwprintw(menu_win, 5, 6, "   / /  | |__  | |    | |  | | /  \\   ");
+        mvwprintw(menu_win, 6, 6, "  / /   |  __| | |    | |  | |/ /\\ \\  ");
+        mvwprintw(menu_win, 7, 6, " / /_   | |____| |____| |__| / ____ \\ ");
+        mvwprintw(menu_win, 8, 6, "/____|  |______|______|_____/_/    \\_\\");
         wattroff(menu_win, COLOR_PAIR(1));
-        mvwprintw(menu_win, 4, 13, "Usa W/S para navegar");
+        wattron(menu_win, COLOR_PAIR(4));
+        mvwprintw(menu_win, 10, 15, "Usa W/S para navegar");
+        wattroff(menu_win, COLOR_PAIR(4));
+
 
         for (int i = 0; i < TOTAL_OPCIONES; i++) {
             if (i == seleccion) {
                 wattron(menu_win, COLOR_PAIR(2));
-                mvwprintw(menu_win, 7 + i * 2, 14, "> %s", opciones[i].c_str());
+                mvwprintw(menu_win, 12 + i * 2, 14, "> %s", opciones[i].c_str());
                 wattroff(menu_win, COLOR_PAIR(2));
 
             } else {
-                mvwprintw(menu_win, 7 + i * 2, 16, "%s", opciones[i].c_str());
+                mvwprintw(menu_win, 12 + i * 2, 16, "%s", opciones[i].c_str());
             }
         }
 
@@ -167,6 +176,7 @@ int main() {
     init_pair(1, COLOR_GREEN, -1);
     init_pair(2, COLOR_YELLOW, -1);
     init_pair(3, COLOR_CYAN, -1);
+    init_pair(4, COLOR_BLUE, -1);
 
     menu_principal();
 
