@@ -107,7 +107,6 @@ void iniciar_juego() {
     ejecutar_partida();
     attroff(COLOR_PAIR(1));
     refresh();
-    getch();
 }
 
 void menu_principal() {
