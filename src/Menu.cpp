@@ -1,4 +1,5 @@
 #include "Menu.hpp"
+#include "Juego.hpp"
 #include <ncurses.h>
 #include <pthread.h> 
 #include <vector>
@@ -103,7 +104,7 @@ void mostrar_puntajes_destacados() {
 void iniciar_juego() {
     clear();
     attron(COLOR_PAIR(1));
-    mvprintw(10, 10, "INICIANDO JUEGO..."); //placeholder temporal
+    ejecutar_partida();
     attroff(COLOR_PAIR(1));
     refresh();
     getch();
