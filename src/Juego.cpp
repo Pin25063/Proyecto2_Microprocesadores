@@ -57,19 +57,64 @@ void ejecutar_partida() {
     WINDOW* juego_win = newwin(MAPA_ALTO, MAP_ANCHO, inicioY, inicioX);
     keypad(juego_win, TRUE);
 
+    int linkX = 19;
+    int linkY = 7;
+    char Link = 'v';
+
     bool en_partida = true;
     while (en_partida) {
         werase(juego_win);
 
         dibujar_mapa(juego_win);
 
-        mvprintw(yMax -2, (xMax - 40) / 2, "presione cualquier tecla para regresar");
+        wattron(juego_win, COLOR_PAIR(1));
+        mvwaddch(juego_win, linkY, linkX, Link);
+        wattroff(juego_win, COLOR_PAIR(1));
+
+        mvprintw(yMax - 2, (xMax - 50) / 2, "utiliza W, A, S, D para moverte y presiona Q para salir");
         refresh();
         wrefresh(juego_win);
         
 
         int tecla = wgetch(juego_win);
-        en_partida = false;
+        int nuevaX = linkX;
+        int nuevaY = linkY;
+
+        switch (tecla) {
+            case 'w':
+            case 'W':
+                nuevaY--;
+                Link = '^';
+                break;
+
+            case 's':
+            case 'S':
+                nuevaY++;
+                Link = 'v';
+                break;
+
+            case 'a':
+            case 'A':
+                nuevaX--;
+                Link = '<';
+                break;
+
+            case 'd':
+            case 'D':
+                nuevaX++;
+                Link = '>';
+                break;
+
+            case 'q':
+            case 'Q':
+                en_partida = false;
+                break;
+        }
+
+        if (mapa[nuevaY][nuevaX] != '#') {
+            linkX = nuevaX;
+            linkY = nuevaY;
+        }
     }
 
     werase(juego_win);
