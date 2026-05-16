@@ -75,7 +75,7 @@ void ejecutar_partida() {
         mvwaddch(juego_win, linkY, linkX, Link);
         wattroff(juego_win, COLOR_PAIR(1));
 
-        mvprintw(yMax - 2, (xMax - 50) / 2, "utiliza W, A, S, D para moverte y presiona Q para salir");
+        mvprintw(yMax - 2, (xMax - 50) / 2, "Utiliza W, A, S, D para moverte y presiona Q para salir");
         refresh();
         wrefresh(juego_win);
         

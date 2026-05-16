@@ -11,14 +11,14 @@ void mostrar_diseno(WINDOW *ventana) {
     getmaxyx(ventana, yMax, xMax);
 
     wattron(ventana, COLOR_PAIR(3));
-    mvwprintw(ventana, yMax - 6, 4, "           / \\");
-    mvwprintw(ventana, yMax - 5, 4, "          /__ \\\\");
-    mvwprintw(ventana, yMax - 4, 4, "         /\\\\  /\\\\");
-    mvwprintw(ventana, yMax - 3, 4, "        /__\\\\/__\\\\");
-    mvwprintw(ventana, yMax - 6, xMax - 22, "           / \\");
-    mvwprintw(ventana, yMax - 5, xMax - 22, "          /__ \\\\");
-    mvwprintw(ventana, yMax - 4, xMax - 22, "         /\\\\  /\\\\");
-    mvwprintw(ventana, yMax - 3, xMax - 22, "        /__\\\\/__\\\\");
+    mvwprintw(ventana, yMax - 6, 10, "   / \\");
+    mvwprintw(ventana, yMax - 5, 10, "  /__ \\\\");
+    mvwprintw(ventana, yMax - 4, 10, " /\\\\  /\\\\");
+    mvwprintw(ventana, yMax - 3, 10, "/__\\\\/__\\\\");
+    mvwprintw(ventana, yMax - 6, xMax - 20, "   / \\");
+    mvwprintw(ventana, yMax - 5, xMax - 20, "  /__ \\\\");
+    mvwprintw(ventana, yMax - 4, xMax - 20, " /\\\\  /\\\\");
+    mvwprintw(ventana, yMax - 3, xMax - 20, "/__\\\\/__\\\\");
     wattroff(ventana, COLOR_PAIR(3));
 
     wattron(ventana, COLOR_PAIR(2));
@@ -26,26 +26,28 @@ void mostrar_diseno(WINDOW *ventana) {
     wattroff(ventana, COLOR_PAIR(2));
 
     wattron(ventana, COLOR_PAIR(1));
-    mvwprintw(ventana, yMax - 6, 60,  "  /\\");
-    mvwprintw(ventana, yMax - 5, 60, " (..)");
-    mvwprintw(ventana, yMax - 4, 60,  " /||\\\\");
-    mvwprintw(ventana, yMax - 3, 60,  "  /\\\\");
+    mvwprintw(ventana, yMax - 6, xMax / 2 - 16,  " /\\");
+    mvwprintw(ventana, yMax - 5, xMax / 2 - 16, "(..)");
+    mvwprintw(ventana, yMax - 4, xMax / 2 - 16,  "/||\\\\");
+    mvwprintw(ventana, yMax - 3, xMax / 2 - 16,  " /\\\\");
     wattroff(ventana, COLOR_PAIR(1));
     wattron(ventana, COLOR_PAIR(2));
-    mvwprintw(ventana, yMax - 4, 68, "o==[]::::::::::::::::>");
+    mvwprintw(ventana, yMax - 4, xMax / 2 - 9, "o==[]::::::::::::::::>");
     wattroff(ventana, COLOR_PAIR(2));
 }
 
 void mostrar_instrucciones() {
     int yMax, xMax;
     getmaxyx(stdscr, yMax, xMax); 
-
     WINDOW *inst_win = newwin(yMax - 5, xMax - 12, 2, 5);
     box(inst_win, 0, 0);
     keypad(inst_win, TRUE);
 
-    mvwprintw(inst_win, 1, (xMax - 10) / 2 - 6, "INSTRUCCIONES");
-    mvwhline(inst_win, 2, 1, ACS_HLINE, xMax - 14);
+    int yWin, xWin;
+    getmaxyx(inst_win, yWin, xWin);
+
+    mvwprintw(inst_win, 1, xWin / 2 - 7, "INSTRUCCIONES");
+    mvwhline(inst_win, 2, 1, ACS_HLINE, xWin - 2);
 
     mvwprintw(inst_win, 4, 3, "OBJETIVO: Explorar el laberinto y llegar a la zona final.");
     mvwprintw(inst_win, 7, 3, "CONTROLES:");
@@ -54,7 +56,7 @@ void mostrar_instrucciones() {
     mvwprintw(inst_win, 10, 5, "K           - Usar objeto secundario");
     mvwprintw(inst_win, 12, 5, "ESC o Q     - Salir de la partida");
 
-    mvwprintw(inst_win, yMax - 7, (xMax - 10) / 2 - 18, "Presiona cualquier tecla para volver al menu");
+    mvwprintw(inst_win, yWin - 8, xWin / 2 - 22, "Presiona cualquier tecla para volver al menu");
 
     mostrar_diseno(inst_win);
 
@@ -70,25 +72,27 @@ void mostrar_instrucciones() {
 void mostrar_puntajes_destacados() {
     int yMax, xMax;
     getmaxyx(stdscr, yMax, xMax);
-
     WINDOW *score_win = newwin(yMax - 5, xMax - 12, 2, 5);
     box(score_win, 0, 0);
     keypad(score_win, TRUE);
 
-    mvwprintw(score_win, 1, (xMax - 10) / 2 - 9, "PUNTAJES DESTACADOS");
-    mvwhline(score_win, 2, 1, ACS_HLINE, xMax - 14);
+    int xWin, yWin;
+    getmaxyx(score_win, yWin, xWin);
 
-    mvwprintw(score_win, 4, (xMax - 10) / 2 - 12, "JUGADOR         PUNTAJE");
-    mvwhline(score_win, 5, (xMax - 10) / 2 - 12, '-', 23);
+    mvwprintw(score_win, 1, xWin / 2 - 8, "PUNTAJES DESTACADOS");
+    mvwhline(score_win, 2, 1, ACS_HLINE, xWin - 2);
+
+    mvwprintw(score_win, 4, xWin / 2 - 11, "JUGADOR         PUNTAJE");
+    mvwhline(score_win, 5, xWin / 2 - 11, '-', 23);
 
     // Datos simulados agregados a la tabla
-    mvwprintw(score_win, 6, (xMax - 10) / 2 - 12, "1. Jugador 1         9500 pts");
-    mvwprintw(score_win, 7, (xMax - 10) / 2 - 12, "2. Jugador 2         8200 pts");
-    mvwprintw(score_win, 8, (xMax - 10) / 2 - 12, "3. Jugador 3         7100 pts");
-    mvwprintw(score_win, 9, (xMax - 10) / 2 - 12, "4. Jugador 4         5000 pts");
-    mvwprintw(score_win, 10, (xMax - 10) / 2 - 12, "5. Jugador 5         4300 pts");
+    mvwprintw(score_win, 6, xWin / 2 - 15, "1. Jugador 1         9500 pts");
+    mvwprintw(score_win, 7, xWin / 2 - 15, "2. Jugador 2         8200 pts");
+    mvwprintw(score_win, 8, xWin / 2 - 15, "3. Jugador 3         7100 pts");
+    mvwprintw(score_win, 9, xWin / 2 - 15, "4. Jugador 4         5000 pts");
+    mvwprintw(score_win, 10, xWin / 2 - 15, "5. Jugador 5         4300 pts");
 
-    mvwprintw(score_win, yMax - 7, (xMax - 10) / 2 - 18, "Presiona cualquier tecla para volver al menu");
+    mvwprintw(score_win, yWin - 8, xWin / 2 - 22, "Presiona cualquier tecla para volver al menu");
 
     mostrar_diseno(score_win);
 
@@ -103,9 +107,9 @@ void mostrar_puntajes_destacados() {
 
 void iniciar_juego() {
     clear();
-    attron(COLOR_PAIR(1));
+    //attron(COLOR_PAIR(1));
     ejecutar_partida();
-    attroff(COLOR_PAIR(1));
+    //attroff(COLOR_PAIR(1));
     refresh();
 }
 
@@ -132,29 +136,31 @@ void menu_principal() {
         box(menu_win, 0, 0);
         keypad(menu_win, TRUE);
 
-        getmaxyx(stdscr, yMax, xMax);
+        int yWin, xWin;
+        getmaxyx(menu_win, yWin, xWin);
+
         wattron(menu_win, COLOR_PAIR(1));
-        mvwprintw(menu_win, 2, 67, "THE LEGEND OF");
-        mvwprintw(menu_win, 3, 53, "  _____  ______   _      _____          ");
-        mvwprintw(menu_win, 4, 53, " |__  / |  ____| | |     |  __ \\     /\\    ");
-        mvwprintw(menu_win, 5, 53, "   / /  | |__    | |     | |  | |   /  \\   ");
-        mvwprintw(menu_win, 6, 53, "  / /   |  __|   | |     | |  | |  / /\\ \\  ");
-        mvwprintw(menu_win, 7, 53, " / /_   | |____  | |____ | |__| / / ____ \\ ");
-        mvwprintw(menu_win, 8, 53, "/____|  |______| |______||_____/ /_/    \\_\\");
+        mvwprintw(menu_win, 2, xWin / 2 - 6, "THE LEGEND OF");
+        mvwprintw(menu_win, 3, xWin / 2 - 22, "  _____  ______   _      _____          ");
+        mvwprintw(menu_win, 4, xWin / 2 - 22, " |__  / |  ____| | |     |  __ \\     /\\    ");
+        mvwprintw(menu_win, 5, xWin / 2 - 22, "   / /  | |__    | |     | |  | |   /  \\   ");
+        mvwprintw(menu_win, 6, xWin / 2 - 22, "  / /   |  __|   | |     | |  | |  / /\\ \\  ");
+        mvwprintw(menu_win, 7, xWin / 2 - 22, " / /_   | |____  | |____ | |__| / / ____ \\ ");
+        mvwprintw(menu_win, 8, xWin / 2 - 22, "/____|  |______| |______||_____/ /_/    \\_\\");
         wattroff(menu_win, COLOR_PAIR(1));
         wattron(menu_win, COLOR_PAIR(4));
-        mvwprintw(menu_win, 11, 64, "Usa W/S para navegar");
+        mvwprintw(menu_win, yWin - 9, xWin / 2 - 10, "Usa W/S para navegar");
         wattroff(menu_win, COLOR_PAIR(4));
 
 
         for (int i = 0; i < TOTAL_OPCIONES; i++) {
             if (i == seleccion) {
                 wattron(menu_win, COLOR_PAIR(2));
-                mvwprintw(menu_win, 14 + i * 2, 64, "> %s", opciones[i].c_str());
+                mvwprintw(menu_win, 14 + i * 2, xWin / 2 - 10, "> %s", opciones[i].c_str());
                 wattroff(menu_win, COLOR_PAIR(2));
 
             } else {
-                mvwprintw(menu_win, 14 + i * 2, 66, "%s", opciones[i].c_str());
+                mvwprintw(menu_win, 14 + i * 2, xWin / 2 - 8, "%s", opciones[i].c_str());
             }
         }
 
