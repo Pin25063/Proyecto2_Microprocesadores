@@ -11,12 +11,12 @@ std::string mapa[MAPA_ALTO] = {
         "#  #    #   #   +  #   #    #   # K #  #",
         "#  #    #   #      #   #    #   #   #  #",
         "#  #    #####      #####    #####   #  #",
-        "#  #                                D  #", 
+        "#  #        E                       D  #", 
         "#  ########                  ########  #",
-        "#  #                                #  #",
+        "#  #                 X              #  #",
         "#  #    #####      #####    #####   #  #",
         "#  #    #   #      #   #    #   #   #  #",
-        "#  #    #   #   /  #   #    #   #   #  #",
+        "#  #    #   #   /  #   #  E #   #   #  #",
         "#  ######   ########   ######   #####  #",
         "#                                      #",
         "########################################"
@@ -39,6 +39,10 @@ void dibujar_mapa(WINDOW* win) {
                 wattron(win, COLOR_PAIR(2));
                 mvwaddch(win, y, x, caracter);
                 wattroff(win, COLOR_PAIR(2));
+            } else if (caracter == 'E' || caracter == 'X') {
+                wattron(win, COLOR_PAIR(4));
+                mvwaddch(win, y, x, caracter);
+                wattroff(win, COLOR_PAIR(4));
             } else {
                 mvwaddch(win, y, x, caracter);
             }
@@ -111,7 +115,9 @@ void ejecutar_partida() {
                 break;
         }
 
-        if (mapa[nuevaY][nuevaX] != '#') {
+        char proximaPosicion = mapa[nuevaY][nuevaX];
+
+        if (mapa[nuevaY][nuevaX] != '#' && proximaPosicion != 'E' && proximaPosicion != 'X') {
             linkX = nuevaX;
             linkY = nuevaY;
         }
