@@ -108,6 +108,18 @@ static void dim_salon(int& alto, int& ancho) {
     }
 }
 
+void dibujar_entidad(WINDOW* win, int y, int x, char simbolo, int par_color) {
+    wattron(win, COLOR_PAIR(par_color));
+    mvwaddch(win, y, x, simbolo);
+    wattroff(win, COLOR_PAIR(par_color));
+}
+
+void borrar_entidad(WINDOW* win, int y, int x) {
+    const std::string* mapa_actual = mapa_ptr();
+    char fondo = mapa_actual[y][x];
+    mvwaddch(win, y, x, fondo);
+}
+
 //  Dibujar mapa 
 void dibujar_mapa(WINDOW* win) {
     int alto, ancho;
