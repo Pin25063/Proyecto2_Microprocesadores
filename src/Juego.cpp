@@ -120,6 +120,21 @@ void borrar_entidad(WINDOW* win, int y, int x) {
     mvwaddch(win, y, x, fondo);
 }
 
+void dibujar_ataque(WINDOW* win, int linkY, int linkX, char orientacion) {
+    wattron(win, COLOR_PAIR(2)); // Color amarillo para la espada
+    if (orientacion == '^') {
+        mvwaddch(win, linkY - 1, linkX, '|'); // Ataque arriba
+    } else if (orientacion == 'v') {
+        mvwaddch(win, linkY + 1, linkX, '|'); // Ataque abajo
+    } else if (orientacion == '<') {
+        mvwaddch(win, linkY, linkX - 1, '-'); // Ataque izquierda
+    } else if (orientacion == '>') {
+        mvwaddch(win, linkY, linkX + 1, '-'); // Ataque derecha
+    }
+    wattroff(win, COLOR_PAIR(2));
+    wrefresh(win);
+}
+
 //  Dibujar mapa 
 void dibujar_mapa(WINDOW* win) {
     int alto, ancho;
@@ -214,6 +229,7 @@ void ejecutar_partida() {
             case 's': case 'S': nuevaY++; link_char = 'v'; break;
             case 'a': case 'A': nuevaX--; link_char = '<'; break;
             case 'd': case 'D': nuevaX++; link_char = '>'; break;
+            case 'j': case 'J': dibujar_ataque(juego_win, linkY, linkX, link_char); break; 
             case 'q': case 'Q': en_partida = false;        break;
         }
 
