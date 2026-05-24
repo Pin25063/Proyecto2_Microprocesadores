@@ -10,7 +10,9 @@ struct Entidad {
     char simbolo;
 };
 
+extern int salon_actual;
+
 void ejecutar_partida();
-void dibujar_mapa();
+void dibujar_mapa(WINDOW* win);
 
 #endif
