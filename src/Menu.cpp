@@ -2,7 +2,7 @@
 #include "Juego.hpp"
 #include <ncurses.h>
 #include <pthread.h> 
-#include <vector>
+//#include <vector>
 #include <string>
 #include <fstream>
 
@@ -11,14 +11,14 @@ void mostrar_diseno(WINDOW *ventana) {
     getmaxyx(ventana, yMax, xMax);
 
     wattron(ventana, COLOR_PAIR(3));
-    mvwprintw(ventana, yMax - 6, 10, "   / \\");
-    mvwprintw(ventana, yMax - 5, 10, "  /__ \\\\");
-    mvwprintw(ventana, yMax - 4, 10, " /\\\\  /\\\\");
-    mvwprintw(ventana, yMax - 3, 10, "/__\\\\/__\\\\");
-    mvwprintw(ventana, yMax - 6, xMax - 20, "   / \\");
-    mvwprintw(ventana, yMax - 5, xMax - 20, "  /__ \\\\");
-    mvwprintw(ventana, yMax - 4, xMax - 20, " /\\\\  /\\\\");
-    mvwprintw(ventana, yMax - 3, xMax - 20, "/__\\\\/__\\\\");
+    mvwprintw(ventana, yMax - 6, 10, "   /\\");
+    mvwprintw(ventana, yMax - 5, 10, "  /__\\");
+    mvwprintw(ventana, yMax - 4, 10, " /\\  /\\");
+    mvwprintw(ventana, yMax - 3, 10, "/__\\/__\\");
+    mvwprintw(ventana, yMax - 6, xMax - 18, "   /\\");
+    mvwprintw(ventana, yMax - 5, xMax - 18, "  /__\\");
+    mvwprintw(ventana, yMax - 4, xMax - 18, " /\\  /\\");
+    mvwprintw(ventana, yMax - 3, xMax - 18, "/__\\/__\\");
     wattroff(ventana, COLOR_PAIR(3));
 
     wattron(ventana, COLOR_PAIR(2));
@@ -26,13 +26,13 @@ void mostrar_diseno(WINDOW *ventana) {
     wattroff(ventana, COLOR_PAIR(2));
 
     wattron(ventana, COLOR_PAIR(1));
-    mvwprintw(ventana, yMax - 6, xMax / 2 - 16,  " /\\");
-    mvwprintw(ventana, yMax - 5, xMax / 2 - 16, "(..)");
-    mvwprintw(ventana, yMax - 4, xMax / 2 - 16,  "/||\\\\");
-    mvwprintw(ventana, yMax - 3, xMax / 2 - 16,  " /\\\\");
+    mvwprintw(ventana, yMax - 6, xMax / 2 - 7,  " /\\");
+    mvwprintw(ventana, yMax - 5, xMax / 2 - 7, "(..)");
+    mvwprintw(ventana, yMax - 4, xMax / 2 - 7,  "/||\\");
+    mvwprintw(ventana, yMax - 3, xMax / 2 - 7,  " /\\");
     wattroff(ventana, COLOR_PAIR(1));
     wattron(ventana, COLOR_PAIR(2));
-    mvwprintw(ventana, yMax - 4, xMax / 2 - 9, "o==[]::::::::::::::::>");
+    mvwprintw(ventana, yMax - 4, xMax / 2 - 1, "o==[]::::>");
     wattroff(ventana, COLOR_PAIR(2));
 }
 
@@ -140,13 +140,13 @@ void menu_principal() {
         getmaxyx(menu_win, yWin, xWin);
 
         wattron(menu_win, COLOR_PAIR(1));
-        mvwprintw(menu_win, 2, xWin / 2 - 6, "THE LEGEND OF");
+        mvwprintw(menu_win, 2, xWin / 2 - 8, "THE LEGEND OF");
         mvwprintw(menu_win, 3, xWin / 2 - 22, "  _____  ______   _      _____          ");
         mvwprintw(menu_win, 4, xWin / 2 - 22, " |__  / |  ____| | |     |  __ \\     /\\    ");
         mvwprintw(menu_win, 5, xWin / 2 - 22, "   / /  | |__    | |     | |  | |   /  \\   ");
         mvwprintw(menu_win, 6, xWin / 2 - 22, "  / /   |  __|   | |     | |  | |  / /\\ \\  ");
-        mvwprintw(menu_win, 7, xWin / 2 - 22, " / /_   | |____  | |____ | |__| / / ____ \\ ");
-        mvwprintw(menu_win, 8, xWin / 2 - 22, "/____|  |______| |______||_____/ /_/    \\_\\");
+        mvwprintw(menu_win, 7, xWin / 2 - 22, " / /__  | |____  | |____ | |__| / / ____ \\ ");
+        mvwprintw(menu_win, 8, xWin / 2 - 22, "/_____| |______| |______||_____/ /_/    \\_\\");
         wattroff(menu_win, COLOR_PAIR(1));
         wattron(menu_win, COLOR_PAIR(4));
         mvwprintw(menu_win, yWin - 9, xWin / 2 - 10, "Usa W/S para navegar");
