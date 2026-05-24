@@ -36,6 +36,34 @@ void mostrar_diseno(WINDOW *ventana) {
     wattroff(ventana, COLOR_PAIR(2));
 }
 
+void mostrar_game_over(bool victoria) {
+    int yMax, xMax;
+    getmaxyx(stdscr, yMax, xMax);
+    WINDOW *fin_win = newwin(10, 40, (yMax - 10) / 2, (xMax - 40) / 2);
+    box(fin_win, 0, 0);
+
+    int yWin, xWin;
+    getmaxyx(fin_win, yWin, xWin);
+
+    if (victoria) {
+        wattron(fin_win, COLOR_PAIR(1)); // Verde
+        mvwprintw(fin_win, 3, xWin / 2 - 5, "¡GANASTE!");
+        wattroff(fin_win, COLOR_PAIR(1));
+        mvwprintw(fin_win, 5, xWin / 2 - 13, "Recuperaste la Trifuerza");
+    } else {
+        wattron(fin_win, COLOR_PAIR(6)); // Rojo (Color 6 que definieron en main)
+        mvwprintw(fin_win, 3, xWin / 2 - 5, "GAME OVER");
+        wattroff(fin_win, COLOR_PAIR(6));
+        mvwprintw(fin_win, 5, xWin / 2 - 12, "Link ha sido derrotado...");
+    }
+
+    mvwprintw(fin_win, 8, xWin / 2 - 16, "Presiona R para reiniciar o Q salir");
+    
+    wrefresh(fin_win);
+    
+
+}
+
 void mostrar_instrucciones() {
     int yMax, xMax;
     getmaxyx(stdscr, yMax, xMax); 
