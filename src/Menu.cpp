@@ -50,11 +50,16 @@ void mostrar_instrucciones() {
     mvwhline(inst_win, 2, 1, ACS_HLINE, xWin - 2);
 
     mvwprintw(inst_win, 4, 3, "OBJETIVO: Explorar el laberinto y llegar a la zona final.");
-    mvwprintw(inst_win, 7, 3, "CONTROLES:");
-    mvwprintw(inst_win, 8, 5, "W, A, S, D  - Mover a Link");
-    mvwprintw(inst_win, 9, 5, "J           - Atacar con Espada");
-    mvwprintw(inst_win, 10, 5, "K           - Usar objeto secundario");
-    mvwprintw(inst_win, 12, 5, "ESC o Q     - Salir de la partida");
+    
+    mvwprintw(inst_win, 6, 3, "CONTROLES:");
+    mvwprintw(inst_win, 7, 5, "W, A, S, D  - Mover a Link");
+    mvwprintw(inst_win, 8, 5, "J           - Atacar con Espada");
+    mvwprintw(inst_win, 9, 5, "K           - Usar objeto secundario");
+    mvwprintw(inst_win, 10, 5, "ESC o Q     - Salir de la partida");
+
+    mvwprintw(inst_win, 12, 3, "MECANICAS:");
+    mvwprintw(inst_win, 13, 5, "Recoge las llaves (K) esparcidas por los salones.");
+    mvwprintw(inst_win, 14, 5, "Cada llave abre una puerta (D) de su respectivo color.");
 
     mvwprintw(inst_win, yWin - 8, xWin / 2 - 22, "Presiona cualquier tecla para volver al menu");
 

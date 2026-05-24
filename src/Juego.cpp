@@ -31,7 +31,7 @@ static const std::string mapa0[ALTO0] = {
     "########################D#######################"
 };
 
-// Salon 1: Izquierda (35x14). Puerta: der (7,34) → vuelve al principal
+// Salon 1: Izquierda (35x14). Puerta: der (7,34) -> vuelve al principal
 static const std::string mapa1[ALTO1] = {
     "#################################",
     "#                               #",
@@ -49,7 +49,7 @@ static const std::string mapa1[ALTO1] = {
     "#################################"
 };
 
-// Salon 2: Derecha (35x14). Puerta: izq (7,0) → vuelve al principal
+// Salon 2: Derecha (35x14). Puerta: izq (7,0) -> vuelve al principal
 static const std::string mapa2[ALTO2] = {
     "#################################",
     "#                               #",
@@ -67,7 +67,7 @@ static const std::string mapa2[ALTO2] = {
     "#################################"
 };
 
-// Salon 3: Abajo (35x14). Puerta: arriba (0,17) → vuelve al principal
+// Salon 3: Abajo (35x14). Puerta: arriba (0,17) -> vuelve al principal
 static const std::string mapa3[ALTO3] = {
     "################D################",
     "#                               #",
@@ -87,7 +87,9 @@ static const std::string mapa3[ALTO3] = {
 
 int salon_actual = 0;
 
-//  Helpers internos 
+bool tiene_llave1 = false, tiene_llave2 = false, tiene_llave3 = false;
+bool llave1_recogida = false, llave2_recogida = false, llave3_recogida = false;
+
 static const std::string* mapa_ptr() {
     switch (salon_actual) {
         case 1:  return mapa1;
@@ -120,9 +122,17 @@ void dibujar_mapa(WINDOW* win) {
                 mvwaddch(win, y, x, c);
                 wattroff(win, COLOR_PAIR(2));
             } else if (c == 'D') {
-                wattron(win, COLOR_PAIR(3));
+                int par;
+                if (salon_actual == 0) {
+                    if      (x == 0)  par = 5;
+                    else if (x == 47) par = 6;
+                    else              par = 7;
+                } else if (salon_actual == 1) par = 5;
+                else if (salon_actual == 2)   par = 6;
+                else                          par = 7;
+                wattron(win, COLOR_PAIR(par));
                 mvwaddch(win, y, x, c);
-                wattroff(win, COLOR_PAIR(3));
+                wattroff(win, COLOR_PAIR(par));
             } else if (c == 'E' || c == 'X') {
                 wattron(win, COLOR_PAIR(4));
                 mvwaddch(win, y, x, c);
@@ -138,6 +148,8 @@ void dibujar_mapa(WINDOW* win) {
 void ejecutar_partida() {
     clear();
     salon_actual = 0;
+    tiene_llave1 = tiene_llave2 = tiene_llave3 = false;
+    llave1_recogida = llave2_recogida = llave3_recogida = false;
 
     int yMax, xMax;
     getmaxyx(stdscr, yMax, xMax);
@@ -157,6 +169,22 @@ void ejecutar_partida() {
 
         dibujar_mapa(juego_win);
 
+        if (salon_actual == 0 && !llave1_recogida) {
+            wattron(juego_win, COLOR_PAIR(5));
+            mvwaddch(juego_win, 9, 24, 'K');
+            wattroff(juego_win, COLOR_PAIR(5));
+        }
+        if (salon_actual == 1 && !llave2_recogida) {
+            wattron(juego_win, COLOR_PAIR(6));
+            mvwaddch(juego_win, 2, 16, 'K');
+            wattroff(juego_win, COLOR_PAIR(6));
+        }
+        if (salon_actual == 2 && !llave3_recogida) {
+            wattron(juego_win, COLOR_PAIR(7));
+            mvwaddch(juego_win, 2, 16, 'K');
+            wattroff(juego_win, COLOR_PAIR(7));
+        }
+
         wattron(juego_win, COLOR_PAIR(1));
         mvwaddch(juego_win, linkY, linkX, link_char);
         wattroff(juego_win, COLOR_PAIR(1));
@@ -166,7 +194,6 @@ void ejecutar_partida() {
         refresh();
         wrefresh(juego_win);
         
-
         int tecla = wgetch(juego_win);
         int nuevaX = linkX, nuevaY = linkY;
 
@@ -188,18 +215,18 @@ void ejecutar_partida() {
             int ns = salon_actual, sx = linkX, sy = linkY;
 
             switch (salon_actual) {
-                case 0: // Principal
-                    if      (nuevaX == 0)  { ns = 1; sx = 31; sy =  7; ok = true; } // puerta izq -> salon izquierda
-                    else if (nuevaX == 47) { ns = 2; sx =  1; sy =  7; ok = true; } // puerta der -> salon derecha
-                    else if (nuevaY == 18) { ns = 3; sx = 16; sy =  1; ok = true; } // puerta abajo -> salon abajo
+                case 0:
+                    if      (nuevaX == 0  && tiene_llave1) { ns = 1; sx = 31; sy =  7; ok = true; }
+                    else if (nuevaX == 47 && tiene_llave2) { ns = 2; sx =  1; sy =  7; ok = true; }
+                    else if (nuevaY == 18 && tiene_llave3) { ns = 3; sx = 16; sy =  1; ok = true; }
                     break;
-                case 1: // Salon izquierda -> volver al principal por puerta izq
+                case 1:
                     if (nuevaX == 32)      { ns = 0; sx =  1; sy =  9; ok = true; }
                     break;
-                case 2: // Salon derecha -> volver al principal por puerta der
+                case 2:
                     if (nuevaX == 0)       { ns = 0; sx = 46; sy =  9; ok = true; }
                     break;
-                case 3: // Salon abajo -> volver al principal por puerta abajo
+                case 3:
                     if (nuevaY == 0)       { ns = 0; sx = 24; sy = 17; ok = true; }
                     break;
             }
@@ -218,6 +245,12 @@ void ejecutar_partida() {
         } else if (prox != '#' && prox != 'E' && prox != 'X') {
             linkX = nuevaX;
             linkY = nuevaY;
+            if (salon_actual == 0 && linkX == 24 && linkY == 9 && !llave1_recogida)
+                { llave1_recogida = true; tiene_llave1 = true; }
+            if (salon_actual == 1 && linkX == 16 && linkY == 2 && !llave2_recogida)
+                { llave2_recogida = true; tiene_llave2 = true; }
+            if (salon_actual == 2 && linkX == 16 && linkY == 2 && !llave3_recogida)
+                { llave3_recogida = true; tiene_llave3 = true; }
         }
     }
 
