@@ -1,5 +1,8 @@
 #include "Juego.hpp"
 #include <string>
+#include <unistd.h>
+#include <cstdlib>
+#include <pthread.h>
 
 //  Dimensiones de cada salón 
 static const int ALTO0 = 19, ANCHO0 = 48;
@@ -173,6 +176,38 @@ void dibujar_mapa(WINDOW* win) {
     }
 }
 
+void* mover_enemigo(void* arg) {
+    DatosEnemigo* enemigo = (DatosEnemigo*)arg;
+
+    while (enemigo -> vivo) {
+        if (salon_actual == enemigo->salon_pertenece) {
+            int direccion = rand() % 4;
+            int nuevaX = enemigo-> x;
+            int nuevaY = enemigo-> y;
+
+            if (direccion == 0) {
+                nuevaY--;
+            } else if (direccion == 1) {
+                nuevaY++;
+            } else if (direccion == 2) {
+                nuevaX--;
+            } else if (direccion == 3) {
+                nuevaX++;
+            }
+
+            char sig_posicion = mapa_ptr()[nuevaY][nuevaX];
+
+            if (sig_posicion != '#' && sig_posicion != 'D') {
+                // sincronizacion
+                enemigo-> x = nuevaX;
+                enemigo-> y = nuevaY;
+            }
+        }
+        usleep(500000);
+    }
+    return nullptr;
+}
+
 // Ejecutar partida 
 void ejecutar_partida() {
     clear();
@@ -191,6 +226,20 @@ void ejecutar_partida() {
 
     int linkX = 5, linkY = 2;
     char link_char = 'v';
+
+    const int NUM_ENEMIGOS = 16;
+    DatosEnemigo enemigos[NUM_ENEMIGOS] = {
+        {20, 5, 'E', 0, true}, {35, 12, 'X', 0, true}, {10, 15, 'E', 0, true}, {40, 3, 'X', 0, true},
+        {10, 5, 'E', 1, true}, {20, 8, 'X', 1, true}, {5, 10, 'E', 1, true}, {25, 3, 'X', 1, true},
+        {15, 6, 'E', 2, true}, {25, 10, 'X', 2, true}, {5, 4, 'E', 2, true}, {28, 8, 'X', 2, true},
+        {10, 5, 'E', 3, true}, {20, 10, 'X', 3, true}, {8, 12, 'E', 3, true}, {25, 4, 'X', 3, true}
+    };
+
+    pthread_t hilos_enemigos[NUM_ENEMIGOS];
+
+    for (int i = 0; i < NUM_ENEMIGOS; i++) {
+        pthread_create(&hilos_enemigos[i], NULL, mover_enemigo, (void*)&enemigos[i]);
+    }
 
     bool en_partida = true;
     while (en_partida) {
@@ -217,6 +266,13 @@ void ejecutar_partida() {
         wattron(juego_win, COLOR_PAIR(1));
         mvwaddch(juego_win, linkY, linkX, link_char);
         wattroff(juego_win, COLOR_PAIR(1));
+
+        for (int i = 0; i < NUM_ENEMIGOS; i++) {
+            if (salon_actual == enemigos[i].salon_pertenece && enemigos[i].vivo) {
+                int color_enemigo = (enemigos[i].simbolo == 'E') ? 4 : 5;
+                dibujar_entidad(juego_win, enemigos[i].y, enemigos[i].x, enemigos[i].simbolo, color_enemigo);
+            }
+        }
 
         mvprintw(yMax - 2, (xMax - 50) / 2,
                  "Utiliza W, A, S, D para moverte y presiona Q para salir");
@@ -283,6 +339,12 @@ void ejecutar_partida() {
                 { llave3_recogida = true; tiene_llave3 = true; }
         }
     }
+
+    for (int i = 0; i < NUM_ENEMIGOS; i++) {
+        enemigos[i].vivo = false;
+        pthread_join(hilos_enemigos[i], NULL);
+    }
+
 
     werase(juego_win);
     wrefresh(juego_win);

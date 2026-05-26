@@ -10,6 +10,14 @@ struct Entidad {
     char simbolo;
 };
 
+struct DatosEnemigo {
+    int x;
+    int y;
+    char simbolo;
+    int salon_pertenece;
+    bool vivo;
+};
+
 extern int salon_actual;
 
 extern bool tiene_llave1, tiene_llave2, tiene_llave3;
@@ -21,5 +29,7 @@ void dibujar_mapa(WINDOW* win);
 void dibujar_entidad(WINDOW* win, int y, int x, char simbolo, int par_color);
 void borrar_entidad(WINDOW* win, int y, int x);
 void dibujar_ataque(WINDOW* win, int linkY, int linkX, char orientacion);
+
+void* mover_enemigo(void* arg);
 
 #endif
