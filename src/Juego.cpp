@@ -90,6 +90,12 @@ static const std::string mapa3[ALTO3] = {
 
 int salon_actual = 0;
 
+int linkX = 5;
+int linkY = 2;
+bool link_recibe_dano = false;
+const int MAX_PROYECTILES = 16;
+DatosProyectil proyectiles_enemigos[MAX_PROYECTILES];
+
 bool tiene_llave1 = false, tiene_llave2 = false, tiene_llave3 = false;
 bool llave1_recogida = false, llave2_recogida = false, llave3_recogida = false;
 
@@ -197,10 +203,43 @@ void* mover_enemigo(void* arg) {
 
             char sig_posicion = mapa_ptr()[nuevaY][nuevaX];
 
-            if (sig_posicion != '#' && sig_posicion != 'D') {
-                // sincronizacion
+            if (nuevaX == linkX && nuevaY == linkY) {
+                link_recibe_dano = true;
+
+                if (direccion == 0) {
+                    enemigo->y++;
+                } else if (direccion == 1) {
+                    enemigo->y--;
+                } else if (direccion == 2) {
+                    enemigo->x++;
+                } else if (direccion == 3) {
+                    enemigo->x--;
+                }
+            } else if (sig_posicion != '#' && sig_posicion != 'D') {
                 enemigo-> x = nuevaX;
                 enemigo-> y = nuevaY;
+            }
+
+            if (enemigo->simbolo == 'E' && (rand() % 100 < 5)) {
+                for (int i = 0; i < MAX_PROYECTILES; i++) {
+                    if (!proyectiles_enemigos[i].activo) {
+                        proyectiles_enemigos[i].x = enemigo->x;
+                        proyectiles_enemigos[i].y = enemigo->y;
+                        proyectiles_enemigos[i].salon_pertenece = enemigo->salon_pertenece;
+                        
+                        if (direccion == 0) proyectiles_enemigos[i].orientacion = '^';
+                        else if (direccion == 1) proyectiles_enemigos[i].orientacion = 'v';
+                        else if (direccion == 2) proyectiles_enemigos[i].orientacion = '<';
+                        else if (direccion == 3) proyectiles_enemigos[i].orientacion = '>';
+                        
+                        proyectiles_enemigos[i].activo = true;
+                        
+                        pthread_t hilo_flecha_enemiga;
+                        pthread_create(&hilo_flecha_enemiga, NULL, mover_proyectil, (void*)&proyectiles_enemigos[i]);
+                        pthread_detach(hilo_flecha_enemiga);
+                        break;
+                    }
+                }
             }
         }
         usleep(500000);
@@ -225,9 +264,13 @@ void* mover_proyectil(void* arg) {
             } else if (proyectil -> orientacion == '>') {
                 nuevaX++;
             }
+
             char sig_posicion = mapa_ptr()[nuevaY][nuevaX];
 
-            if (sig_posicion == '#' || sig_posicion == 'D') {
+            if (nuevaX == linkX && nuevaY == linkY) {
+                link_recibe_dano = true;
+                proyectil ->activo = false;
+            } else if (sig_posicion == '#' || sig_posicion == 'D') {
                 proyectil -> activo = false;
             } else {
                 proyectil -> x = nuevaX;
@@ -239,9 +282,15 @@ void* mover_proyectil(void* arg) {
     return nullptr;
 }
 
+
+
+
 // Ejecutar partida 
 void ejecutar_partida() {
     clear();
+    linkX = 5;
+    linkY = 2;
+    link_recibe_dano = false;
     salon_actual = 0;
     tiene_llave1 = tiene_llave2 = tiene_llave3 = false;
     llave1_recogida = llave2_recogida = llave3_recogida = false;
@@ -255,7 +304,6 @@ void ejecutar_partida() {
     WINDOW* juego_win = newwin(alto, ancho, (yMax - alto) / 2, (xMax - ancho) / 2);
     keypad(juego_win, TRUE);
 
-    int linkX = 5, linkY = 2;
     char link_char = 'v';
 
     const int NUM_ENEMIGOS = 16;
@@ -297,9 +345,16 @@ void ejecutar_partida() {
             wattroff(juego_win, COLOR_PAIR(7));
         }
 
-        wattron(juego_win, COLOR_PAIR(1));
-        mvwaddch(juego_win, linkY, linkX, link_char);
-        wattroff(juego_win, COLOR_PAIR(1));
+        if (link_recibe_dano) {
+            wattron(juego_win, COLOR_PAIR(6)); 
+            mvwaddch(juego_win, linkY, linkX, link_char);
+            wattroff(juego_win, COLOR_PAIR(6));
+            link_recibe_dano = false; 
+        } else {
+            wattron(juego_win, COLOR_PAIR(1)); 
+            mvwaddch(juego_win, linkY, linkX, link_char);
+            wattroff(juego_win, COLOR_PAIR(1));
+        }
 
         for (int i = 0; i < NUM_ENEMIGOS; i++) {
             if (salon_actual == enemigos[i].salon_pertenece && enemigos[i].vivo) {
@@ -310,6 +365,12 @@ void ejecutar_partida() {
 
         if (flecha.activo && salon_actual == flecha.salon_pertenece) {
             dibujar_entidad(juego_win, flecha.y, flecha.x, '*', 3);
+        }
+
+        for (int i = 0; i < MAX_PROYECTILES; i++) {
+            if (proyectiles_enemigos[i].activo && salon_actual == proyectiles_enemigos[i].salon_pertenece) {
+                dibujar_entidad(juego_win, proyectiles_enemigos[i].y, proyectiles_enemigos[i].x, '*', 6);
+            }
         }
 
         mvprintw(yMax - 2, (xMax - 50) / 2,
