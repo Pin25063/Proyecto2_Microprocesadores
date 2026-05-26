@@ -208,6 +208,37 @@ void* mover_enemigo(void* arg) {
     return nullptr;
 }
 
+void* mover_proyectil(void* arg) {
+    DatosProyectil* proyectil = (DatosProyectil*) arg;
+
+    while (proyectil -> activo) {
+        if (salon_actual == proyectil -> salon_pertenece) {
+            int nuevaX = proyectil->x;
+            int nuevaY = proyectil->y;
+
+            if (proyectil ->orientacion == '^') {
+                nuevaY--;
+            } else if (proyectil -> orientacion == 'v') {
+                nuevaY++;
+            } else if (proyectil -> orientacion == '<') {
+                nuevaX--;
+            } else if (proyectil -> orientacion == '>') {
+                nuevaX++;
+            }
+            char sig_posicion = mapa_ptr()[nuevaY][nuevaX];
+
+            if (sig_posicion == '#' || sig_posicion == 'D') {
+                proyectil -> activo = false;
+            } else {
+                proyectil -> x = nuevaX;
+                proyectil ->y = nuevaY;
+            }
+        }
+        usleep(100000);
+    }
+    return nullptr;
+}
+
 // Ejecutar partida 
 void ejecutar_partida() {
     clear();
@@ -240,6 +271,9 @@ void ejecutar_partida() {
     for (int i = 0; i < NUM_ENEMIGOS; i++) {
         pthread_create(&hilos_enemigos[i], NULL, mover_enemigo, (void*)&enemigos[i]);
     }
+
+    DatosProyectil flecha = {0, 0, '^', 0, false};
+    pthread_t hilo_flecha;
 
     bool en_partida = true;
     while (en_partida) {
@@ -274,6 +308,10 @@ void ejecutar_partida() {
             }
         }
 
+        if (flecha.activo && salon_actual == flecha.salon_pertenece) {
+            dibujar_entidad(juego_win, flecha.y, flecha.x, '*', 3);
+        }
+
         mvprintw(yMax - 2, (xMax - 50) / 2,
                  "Utiliza W, A, S, D para moverte y presiona Q para salir");
         refresh();
@@ -288,6 +326,17 @@ void ejecutar_partida() {
             case 'a': case 'A': nuevaX--; link_char = '<'; break;
             case 'd': case 'D': nuevaX++; link_char = '>'; break;
             case 'j': case 'J': dibujar_ataque(juego_win, linkY, linkX, link_char); break; 
+            case 'k':
+            case 'K':
+                if (!flecha.activo) {
+                    flecha.x = linkX;
+                    flecha.y = linkY;
+                    flecha.orientacion = link_char;
+                    flecha.salon_pertenece = salon_actual;
+                    flecha.activo = true;
+                    pthread_create(&hilo_flecha, NULL, mover_proyectil, (void*)&flecha);
+                }
+                break;
             case 'q': case 'Q': en_partida = false;        break;
         }
 
@@ -345,6 +394,10 @@ void ejecutar_partida() {
         pthread_join(hilos_enemigos[i], NULL);
     }
 
+    if (flecha.activo) {
+        flecha.activo = false;
+        pthread_join(hilo_flecha, NULL);
+    }
 
     werase(juego_win);
     wrefresh(juego_win);

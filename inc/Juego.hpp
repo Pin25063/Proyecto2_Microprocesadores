@@ -18,6 +18,14 @@ struct DatosEnemigo {
     bool vivo;
 };
 
+struct DatosProyectil {
+    int x;
+    int y;
+    char orientacion;
+    int salon_pertenece;
+    bool activo;
+};
+
 extern int salon_actual;
 
 extern bool tiene_llave1, tiene_llave2, tiene_llave3;
@@ -31,5 +39,6 @@ void borrar_entidad(WINDOW* win, int y, int x);
 void dibujar_ataque(WINDOW* win, int linkY, int linkX, char orientacion);
 
 void* mover_enemigo(void* arg);
+void* mover_proyectil(void* arg);
 
 #endif
