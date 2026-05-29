@@ -5,87 +5,120 @@
 #include <pthread.h>
 
 //  Dimensiones de cada salón 
-static const int ALTO0 = 19, ANCHO0 = 48;
-static const int ALTO1 = 14, ANCHO1 = 33;
-static const int ALTO2 = 14, ANCHO2 = 33;
-static const int ALTO3 = 14, ANCHO3 = 33;
+static const int ALTO0 = 28, ANCHO0 = 80;
+static const int ALTO1 = 22, ANCHO1 = 60;
+static const int ALTO2 = 22, ANCHO2 = 60;
+static const int ALTO3 = 22, ANCHO3 = 60;
 
 // Mapas estáticos 
-// Salon 0: Principal (48x19). Puertas: izq (9,0), der (9,47), abajo (18,24)
+// Salon 0: Principal
 static const std::string mapa0[ALTO0] = {
-    "################################################",
-    "#                                              #",
-    "#                                              #",
-    "#         ###                   ####           #",
-    "#        ######               ########         #",
-    "#                                              #",
-    "#                              ##              #",
-    "#                            #####             #",
-    "#                                              #",
-    "D         ######                               D",
-    "#       #########                   #####      #",
-    "#                                              #",
-    "#                                              #",
-    "#                            ######            #",
-    "#                          ##########          #",
-    "#        #######                               #",
-    "#      ###########                             #",
-    "#                                              #",
-    "########################D#######################"
+    "################################################################################",
+    "#                                                                              #",
+    "#                                                                              #",
+    "#                                                                              #",
+    "#         ##########                              ##########                   #",
+    "#         ##########                              ##########                   #",
+    "#                                                                              #",
+    "#                                                                              #",
+    "#                             ###########                                      #",
+    "#                             ###########                                      #",
+    "#                                                                              #",
+    "#                                                                              #",
+    "#      ###########                                           ###########       #",
+    "#      ###########                                           ###########       #",
+    "#                                                                              #",
+    "#                                                                              #",
+    "#                           #####################                              #",
+    "#                           #####################                              #",
+    "#                                                                              #",
+    "|                                                                              |",
+    "#                                                                              #",
+    "#                                                                              #",
+    "#         ##########                              ##########                   #",
+    "#         ##########                              ##########                   #",
+    "#                                                                              #",
+    "#                                                                              #",
+    "#                                                                              #",
+    "########################################|#######################################"
 };
 
-// Salon 1: Izquierda (35x14). Puerta: der (7,34) -> vuelve al principal
+// Salon 1: Izquierda 
 static const std::string mapa1[ALTO1] = {
-    "#################################",
-    "#                               #",
-    "#                               #",
-    "#      ####           ####      #",
-    "#      ####           ####      #",
-    "#      ####           ####      #",
-    "#      ####           ####      #",
-    "#      ####           ####      D",
-    "#      ####           ####      #",
-    "#      ####           ####      #",
-    "#      ####           ####      #",
-    "#                               #",
-    "#                               #",
-    "#################################"
+    "############################################################",
+    "#                                                          #",
+    "#                                                          #",
+    "#        ###########                 ###########           #",
+    "#        ###########                 ###########           #",
+    "#                                                          #",
+    "#                                                          #",
+    "#                 #########################                #",
+    "#                                                          #",
+    "#                                                          #",
+    "#        ###########                 ###########           #",
+    "#        ###########                 ###########           #",
+    "#                                                          #",
+    "#                                                          #",
+    "#                 #########################                #",
+    "#                                                          #",
+    "#                                                          #",
+    "#        ###########                 ###########           #",
+    "#        ###########                 ###########           #",
+    "#                                                          |",
+    "#                                                          #",
+    "############################################################"
 };
 
-// Salon 2: Derecha (35x14). Puerta: izq (7,0) -> vuelve al principal
+// Salon 2: Derecha 
 static const std::string mapa2[ALTO2] = {
-    "#################################",
-    "#                               #",
-    "#                               #",
-    "#      ####           ####      #",
-    "#      ####           ####      #",
-    "#                               #",
-    "#      ###################      #",
-    "D      ###################      #",
-    "#                               #",
-    "#      ####           ####      #",
-    "#      ####           ####      #",
-    "#                               #",
-    "#                               #",
-    "#################################"
+    "############################################################",
+    "#                                                          #",
+    "#                                                          #",
+    "#        ###########                 ###########           #",
+    "#        ###########                 ###########           #",
+    "#                                                          #",
+    "#                                                          #",
+    "#             ###############################              #",
+    "|             ###############################              #",
+    "#                                                          #",
+    "#                                                          #",
+    "#        ###########                 ###########           #",
+    "#        ###########                 ###########           #",
+    "#                                                          #",
+    "#                                                          #",
+    "#             ###############################              #",
+    "#                                                          #",
+    "#                                                          #",
+    "#        ###########                 ###########           #",
+    "#        ###########                 ###########           #",
+    "#                                                          #",
+    "############################################################"
 };
 
-// Salon 3: Abajo (35x14). Puerta: arriba (0,17) -> vuelve al principal
+// Salon 3: Abajo
 static const std::string mapa3[ALTO3] = {
-    "################D################",
-    "#                               #",
-    "#                               #",
-    "#      ###################      #",
-    "#      ###################      #",
-    "#                               #",
-    "#      ###################      #",
-    "#      ###################      #",
-    "#                               #",
-    "#      ###################      #",
-    "#      ###################      #",
-    "#                               #",
-    "#                               #",
-    "#################################"
+    "##############################|#############################",
+    "#                                                          #",
+    "#                                                          #",
+    "#          #####################################           #",
+    "#          #####################################           #",
+    "#                                                          #",
+    "#                                                          #",
+    "#               ###########################                #",
+    "#                                                          #",
+    "#                                                          #",
+    "#          #####################################           #",
+    "#          #####################################           #",
+    "#                                                          #",
+    "#                                                          #",
+    "#               ###########################                #",
+    "#                                                          #",
+    "#                                                          #",
+    "#          #####################################           #",
+    "#          #####################################           #",
+    "#                                                          #",
+    "#                                                          #",
+    "############################################################"
 };
 
 int salon_actual = 0;
@@ -155,19 +188,53 @@ void dibujar_mapa(WINDOW* win) {
     for (int y = 0; y < alto; y++) {
         for (int x = 0; x < ancho; x++) {
             char c = mapa[y][x];
+
             if (c == '#') {
                 wattron(win, COLOR_PAIR(2));
                 mvwaddch(win, y, x, c);
                 wattroff(win, COLOR_PAIR(2));
-            } else if (c == 'D') {
+            }
+            else if (c == '|' || c == '/') {
                 int par;
+
                 if (salon_actual == 0) {
-                    if      (x == 0)  par = 5;
-                    else if (x == 47) par = 6;
-                    else              par = 7;
-                } else if (salon_actual == 1) par = 5;
-                else if (salon_actual == 2)   par = 6;
-                else                          par = 7;
+                    if (x == 0) {
+                        par = 5;
+                        if (tiene_llave1)
+                            c = '/';
+                        else
+                            c = '|';
+                    }
+                    else if (x == ANCHO0 - 1) {
+                        par = 6;
+
+                        if (tiene_llave2)
+                            c = '/';
+                        else
+                            c = '|';
+                    }
+                    else {
+                        par = 7;
+
+                        if (tiene_llave3)
+                            c = '/';
+                        else
+                            c = '|';
+                    }
+                }
+                else if (salon_actual == 1) {
+                    par = 5;
+                    c = '/';
+                }
+                else if (salon_actual == 2) {
+                    par = 6;
+                    c = '/';
+                }
+                else {
+                    par = 7;
+                    c = '/';
+                }
+
                 wattron(win, COLOR_PAIR(par));
                 mvwaddch(win, y, x, c);
                 wattroff(win, COLOR_PAIR(par));
@@ -215,7 +282,7 @@ void* mover_enemigo(void* arg) {
                 } else if (direccion == 3) {
                     enemigo->x--;
                 }
-            } else if (sig_posicion != '#' && sig_posicion != 'D') {
+            } else if (sig_posicion != '#' && sig_posicion != '|') {
                 enemigo-> x = nuevaX;
                 enemigo-> y = nuevaY;
             }
@@ -270,7 +337,7 @@ void* mover_proyectil(void* arg) {
             if (nuevaX == linkX && nuevaY == linkY) {
                 link_recibe_dano = true;
                 proyectil ->activo = false;
-            } else if (sig_posicion == '#' || sig_posicion == 'D') {
+            } else if (sig_posicion == '#' || sig_posicion == '|') {
                 proyectil -> activo = false;
             } else {
                 proyectil -> x = nuevaX;
@@ -405,25 +472,55 @@ void ejecutar_partida() {
 
         char prox = mapa_ptr()[nuevaY][nuevaX];
 
-        if (prox == 'D') {
-            // Determinar destino según salón actual y puerta tocada
+        if (prox == '|' || prox == '/') {
+            // Determinar destino según salón actual
             bool ok = false;
             int ns = salon_actual, sx = linkX, sy = linkY;
 
             switch (salon_actual) {
                 case 0:
-                    if      (nuevaX == 0  && tiene_llave1) { ns = 1; sx = 31; sy =  7; ok = true; }
-                    else if (nuevaX == 47 && tiene_llave2) { ns = 2; sx =  1; sy =  7; ok = true; }
-                    else if (nuevaY == 18 && tiene_llave3) { ns = 3; sx = 16; sy =  1; ok = true; }
+                    if (nuevaX == 0 && tiene_llave1) {
+                        ns = 1;
+                        sx = ANCHO1 - 2;
+                        sy = 19;
+                        ok = true;
+                    }
+                    else if (nuevaX == ANCHO0 - 1 && tiene_llave2) {
+                        ns = 2;
+                        sx = 1;
+                        sy = 8;
+                        ok = true;
+                    }
+                    else if (nuevaY == ALTO0 - 1 && tiene_llave3) {
+                        ns = 3;
+                        sx = 30;
+                        sy = 1;
+                        ok = true;
+                    }
                     break;
                 case 1:
-                    if (nuevaX == 32)      { ns = 0; sx =  1; sy =  9; ok = true; }
+                    if (nuevaX == ANCHO1 - 1) {
+                        ns = 0;
+                        sx = 1;
+                        sy = 19;
+                        ok = true;
+                    }
                     break;
                 case 2:
-                    if (nuevaX == 0)       { ns = 0; sx = 46; sy =  9; ok = true; }
+                    if (nuevaX == 0) {
+                        ns = 0;
+                        sx = ANCHO0 - 2;
+                        sy = 19;
+                        ok = true;
+                    }
                     break;
                 case 3:
-                    if (nuevaY == 0)       { ns = 0; sx = 24; sy = 17; ok = true; }
+                    if (nuevaY == 0) {
+                        ns = 0;
+                        sx = 40;
+                        sy = ALTO0 - 2;
+                        ok = true;
+                    }
                     break;
             }
 
@@ -434,11 +531,10 @@ void ejecutar_partida() {
                 dim_salon(alto, ancho);
                 delwin(juego_win);
                 clear(); refresh();
-                juego_win = newwin(alto, ancho,
-                                   (yMax - alto) / 2, (xMax - ancho) / 2);
+                juego_win = newwin(alto, ancho, (yMax - alto) / 2, (xMax - ancho) / 2);
                 keypad(juego_win, TRUE);
             }
-        } else if (prox != '#' && prox != 'E' && prox != 'X') {
+        } else if (prox != '#' && prox != 'E' && prox != 'X' && prox != '|' && prox != '/') {
             linkX = nuevaX;
             linkY = nuevaY;
             if (salon_actual == 0 && linkX == 24 && linkY == 9 && !llave1_recogida)
