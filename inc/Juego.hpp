@@ -3,6 +3,7 @@
 
 #include <ncurses.h>
 #include <vector>
+#include <pthread.h>
 
 struct Entidad {
     int x;
@@ -29,6 +30,11 @@ struct DatosProyectil {
 
 const int MAX_PROYECTILES = 16;
 const int VELOCIDAD_ENEMIGOS = 200000;
+
+extern pthread_mutex_t mutex_jugador;
+extern pthread_mutex_t mutex_proyectiles;
+extern pthread_mutex_t mutex_enemigos;
+extern pthread_mutex_t mutex_salon;
 
 extern int salon_actual;
 extern bool tiene_llave1, tiene_llave2, tiene_llave3;

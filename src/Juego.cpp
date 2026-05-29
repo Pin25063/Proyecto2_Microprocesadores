@@ -7,9 +7,14 @@
 #include "Render.hpp"
 #include "Enemigos.hpp"
 #include "Proyectiles.hpp"
+#include <ctime>
+
+pthread_mutex_t mutex_jugador = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutex_proyectiles = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutex_enemigos = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t mutex_salon = PTHREAD_MUTEX_INITIALIZER;
 
 int salon_actual = 0;
-
 int linkX = 5;
 int linkY = 2;
 bool link_recibe_dano = false;
@@ -20,6 +25,7 @@ bool llave1_recogida = false, llave2_recogida = false, llave3_recogida = false;
 
 // Ejecutar partida 
 void ejecutar_partida() {
+    srand(time(NULL));
     clear();
     linkX = 5;
     linkY = 2;
@@ -94,6 +100,7 @@ void ejecutar_partida() {
             wattroff(juego_win, COLOR_PAIR(7));
         }
 
+        pthread_mutex_lock(&mutex_jugador);
         if (link_recibe_dano) {
             wattron(juego_win, COLOR_PAIR(6)); 
             mvwaddch(juego_win, linkY, linkX, link_char);
@@ -104,23 +111,28 @@ void ejecutar_partida() {
             mvwaddch(juego_win, linkY, linkX, link_char);
             wattroff(juego_win, COLOR_PAIR(1));
         }
+        pthread_mutex_unlock(&mutex_jugador);
 
+        pthread_mutex_lock(&mutex_enemigos);
         for (int i = 0; i < NUM_ENEMIGOS; i++) {
             if (salon_actual == enemigos[i].salon_pertenece && enemigos[i].vivo) {
                 int color_enemigo = (enemigos[i].simbolo == 'E') ? 4 : 5;
                 dibujar_entidad(juego_win, enemigos[i].y, enemigos[i].x, enemigos[i].simbolo, color_enemigo);
             }
         }
+        pthread_mutex_unlock(&mutex_enemigos);
 
         if (flecha.activo && salon_actual == flecha.salon_pertenece) {
             dibujar_entidad(juego_win, flecha.y, flecha.x, '*', 3);
         }
 
+        pthread_mutex_lock(&mutex_proyectiles);
         for (int i = 0; i < MAX_PROYECTILES; i++) {
             if (proyectiles_enemigos[i].activo && salon_actual == proyectiles_enemigos[i].salon_pertenece) {
                 dibujar_entidad(juego_win, proyectiles_enemigos[i].y, proyectiles_enemigos[i].x, '*', 6);
             }
         }
+        pthread_mutex_unlock(&mutex_proyectiles);
 
         mvprintw(yMax - 2, (xMax - 50) / 2,
                  "Utiliza W, A, S, D para moverte y presiona Q para salir");
@@ -207,7 +219,9 @@ void ejecutar_partida() {
             }
 
             if (ok) {
+                pthread_mutex_lock(&mutex_salon);
                 salon_actual = ns;
+                pthread_mutex_unlock(&mutex_salon);
                 linkX = sx;
                 linkY = sy;
                 dim_salon(alto, ancho);
@@ -218,8 +232,10 @@ void ejecutar_partida() {
                 nodelay(juego_win, TRUE);
             }
         } else if (prox != '#' && prox != 'E' && prox != 'X' && prox != '|' && prox != '/') {
+            pthread_mutex_lock(&mutex_jugador);
             linkX = nuevaX;
             linkY = nuevaY;
+            pthread_mutex_unlock(&mutex_jugador);
             if (salon_actual == 0 && linkX == 24 && linkY == 9 && !llave1_recogida)
                 { llave1_recogida = true; tiene_llave1 = true; }
             if (salon_actual == 1 && linkX == 16 && linkY == 2 && !llave2_recogida)

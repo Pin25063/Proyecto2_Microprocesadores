@@ -10,7 +10,11 @@ void* mover_enemigo(void* arg) {
     DatosEnemigo* enemigo = (DatosEnemigo*)arg;
 
     while (enemigo -> vivo) {
-        if (salon_actual == enemigo->salon_pertenece) {
+        pthread_mutex_lock(&mutex_salon);
+        bool mismo_salon = salon_actual == enemigo->salon_pertenece;
+        pthread_mutex_unlock(&mutex_salon);
+
+        if (mismo_salon) {
             int direccion = enemigo->direccion;
             int nuevaX = enemigo-> x;
             int nuevaY = enemigo-> y;
@@ -31,9 +35,9 @@ void* mover_enemigo(void* arg) {
 
             char sig_posicion = mapa_ptr()[nuevaY][nuevaX];
 
+            pthread_mutex_lock(&mutex_jugador);
             if (nuevaX == linkX && nuevaY == linkY) {
                 link_recibe_dano = true;
-
                 if (direccion == 0) {
                     enemigo->y++;
                 } else if (direccion == 1) {
@@ -43,14 +47,20 @@ void* mover_enemigo(void* arg) {
                 } else if (direccion == 3) {
                     enemigo->x--;
                 }
-            } else if (sig_posicion != '#' && sig_posicion != '|' && sig_posicion != '/') {
+            }
+            pthread_mutex_unlock(&mutex_jugador);
+
+            if (sig_posicion != '#' && sig_posicion != '|' && sig_posicion != '/') {
+                pthread_mutex_lock(&mutex_enemigos);
                 enemigo->x = nuevaX;
                 enemigo->y = nuevaY;
+                pthread_mutex_unlock(&mutex_enemigos);
             } else {
                 enemigo->direccion = rand() % 4;
             }
 
             if (enemigo->simbolo == 'E' && (rand() % 100 < 5)) {
+                pthread_mutex_lock(&mutex_proyectiles);
                 for (int i = 0; i < MAX_PROYECTILES; i++) {
                     if (!proyectiles_enemigos[i].activo) {
                         proyectiles_enemigos[i].x = enemigo->x;
@@ -70,6 +80,7 @@ void* mover_enemigo(void* arg) {
                         break;
                     }
                 }
+                pthread_mutex_unlock(&mutex_proyectiles);
             }
         }
         usleep(VELOCIDAD_ENEMIGOS);

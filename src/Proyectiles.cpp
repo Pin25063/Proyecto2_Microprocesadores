@@ -9,7 +9,11 @@ void* mover_proyectil(void* arg) {
     DatosProyectil* proyectil = (DatosProyectil*) arg;
 
     while (proyectil -> activo) {
-        if (salon_actual == proyectil -> salon_pertenece) {
+        pthread_mutex_lock(&mutex_salon);
+        bool mismo_salon = salon_actual == proyectil->salon_pertenece;
+        pthread_mutex_unlock(&mutex_salon);
+
+        if (mismo_salon) {
             int nuevaX = proyectil->x;
             int nuevaY = proyectil->y;
 
@@ -32,6 +36,7 @@ void* mover_proyectil(void* arg) {
             }
             char sig_posicion = mapa_ptr()[nuevaY][nuevaX];
 
+            pthread_mutex_lock(&mutex_jugador);
             if (nuevaX == linkX && nuevaY == linkY) {
                 link_recibe_dano = true;
                 proyectil ->activo = false;
@@ -41,6 +46,7 @@ void* mover_proyectil(void* arg) {
                 proyectil -> x = nuevaX;
                 proyectil ->y = nuevaY;
             }
+            pthread_mutex_unlock(&mutex_jugador);
         }
         usleep(100000);
     }
