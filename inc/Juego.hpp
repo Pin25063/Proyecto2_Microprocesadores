@@ -26,12 +26,15 @@ struct DatosProyectil {
     bool activo;
 };
 
+const int MAX_PROYECTILES = 16;
+
 extern int salon_actual;
 extern bool tiene_llave1, tiene_llave2, tiene_llave3;
 extern bool llave1_recogida, llave2_recogida, llave3_recogida;
 extern int linkX;
 extern int linkY;
 extern bool link_recibe_dano;
+extern DatosProyectil proyectiles_enemigos[MAX_PROYECTILES];
 
 void ejecutar_partida();
 void dibujar_mapa(WINDOW* win);
