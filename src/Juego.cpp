@@ -41,10 +41,25 @@ void ejecutar_partida() {
 
     const int NUM_ENEMIGOS = 16;
     DatosEnemigo enemigos[NUM_ENEMIGOS] = {
-        {20, 5, 'E', 0, true}, {35, 12, 'X', 0, true}, {10, 15, 'E', 0, true}, {40, 3, 'X', 0, true},
-        {10, 5, 'E', 1, true}, {20, 8, 'X', 1, true}, {5, 10, 'E', 1, true}, {25, 3, 'X', 1, true},
-        {15, 6, 'E', 2, true}, {25, 10, 'X', 2, true}, {5, 4, 'E', 2, true}, {28, 8, 'X', 2, true},
-        {10, 5, 'E', 3, true}, {20, 10, 'X', 3, true}, {8, 12, 'E', 3, true}, {25, 4, 'X', 3, true}
+        {20, 5, 'E', 0, true, rand() % 4},
+        {35, 12, 'X', 0, true, rand() % 4},
+        {10, 15, 'E', 0, true, rand() % 4},
+        {40, 3, 'X', 0, true, rand() % 4},
+
+        {10, 5, 'E', 1, true, rand() % 4},
+        {20, 8, 'X', 1, true, rand() % 4},
+        {5, 10, 'E', 1, true, rand() % 4},
+        {25, 3, 'X', 1, true, rand() % 4},
+
+        {15, 6, 'E', 2, true, rand() % 4},
+        {25, 10, 'X', 2, true, rand() % 4},
+        {5, 4, 'E', 2, true, rand() % 4},
+        {45, 8, 'X', 2, true, rand() % 4},
+
+        {10, 5, 'E', 3, true, rand() % 4},
+        {20, 10, 'X', 3, true, rand() % 4},
+        {8, 12, 'E', 3, true, rand() % 4},
+        {25, 4, 'X', 3, true, rand() % 4}
     };
 
     pthread_t hilos_enemigos[NUM_ENEMIGOS];

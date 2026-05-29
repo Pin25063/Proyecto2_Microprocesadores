@@ -23,6 +23,13 @@ void* mover_proyectil(void* arg) {
                 nuevaX++;
             }
 
+            int alto, ancho;
+            dim_salon(alto, ancho);
+
+            if (nuevaX < 0 || nuevaX >= ancho || nuevaY < 0 || nuevaY >= alto) {
+                proyectil->activo = false;
+                continue;
+            }
             char sig_posicion = mapa_ptr()[nuevaY][nuevaX];
 
             if (nuevaX == linkX && nuevaY == linkY) {

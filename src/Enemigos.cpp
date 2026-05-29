@@ -11,18 +11,22 @@ void* mover_enemigo(void* arg) {
 
     while (enemigo -> vivo) {
         if (salon_actual == enemigo->salon_pertenece) {
-            int direccion = rand() % 4;
+            int direccion = enemigo->direccion;
             int nuevaX = enemigo-> x;
             int nuevaY = enemigo-> y;
 
-            if (direccion == 0) {
-                nuevaY--;
-            } else if (direccion == 1) {
-                nuevaY++;
-            } else if (direccion == 2) {
-                nuevaX--;
-            } else if (direccion == 3) {
-                nuevaX++;
+            switch (direccion) {
+                case 0: nuevaY--; break;
+                case 1: nuevaY++; break;
+                case 2: nuevaX--; break;
+                case 3: nuevaX++; break;
+            }
+
+            int alto, ancho;
+            dim_salon(alto, ancho);
+
+            if (nuevaX < 0 || nuevaX >= ancho || nuevaY < 0 || nuevaY >= alto) {
+                continue;
             }
 
             char sig_posicion = mapa_ptr()[nuevaY][nuevaX];
@@ -39,9 +43,11 @@ void* mover_enemigo(void* arg) {
                 } else if (direccion == 3) {
                     enemigo->x--;
                 }
-            } else if (sig_posicion != '#' && sig_posicion != '|') {
-                enemigo-> x = nuevaX;
-                enemigo-> y = nuevaY;
+            } else if (sig_posicion != '#' && sig_posicion != '|' && sig_posicion != '/') {
+                enemigo->x = nuevaX;
+                enemigo->y = nuevaY;
+            } else {
+                enemigo->direccion = rand() % 4;
             }
 
             if (enemigo->simbolo == 'E' && (rand() % 100 < 5)) {

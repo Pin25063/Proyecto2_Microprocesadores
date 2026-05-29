@@ -16,6 +16,7 @@ struct DatosEnemigo {
     char simbolo;
     int salon_pertenece;
     bool vivo;
+    int direccion;
 };
 
 struct DatosProyectil {
