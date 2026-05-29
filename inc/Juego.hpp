@@ -28,6 +28,7 @@ struct DatosProyectil {
 };
 
 const int MAX_PROYECTILES = 16;
+const int VELOCIDAD_ENEMIGOS = 200000;
 
 extern int salon_actual;
 extern bool tiene_llave1, tiene_llave2, tiene_llave3;

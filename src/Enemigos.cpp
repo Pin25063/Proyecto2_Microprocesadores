@@ -72,7 +72,7 @@ void* mover_enemigo(void* arg) {
                 }
             }
         }
-        usleep(500000);
+        usleep(VELOCIDAD_ENEMIGOS);
     }
     return nullptr;
 }

@@ -36,6 +36,7 @@ void ejecutar_partida() {
 
     WINDOW* juego_win = newwin(alto, ancho, (yMax - alto) / 2, (xMax - ancho) / 2);
     keypad(juego_win, TRUE);
+    nodelay(juego_win, TRUE);
 
     char link_char = 'v';
 
@@ -214,6 +215,7 @@ void ejecutar_partida() {
                 clear(); refresh();
                 juego_win = newwin(alto, ancho, (yMax - alto) / 2, (xMax - ancho) / 2);
                 keypad(juego_win, TRUE);
+                nodelay(juego_win, TRUE);
             }
         } else if (prox != '#' && prox != 'E' && prox != 'X' && prox != '|' && prox != '/') {
             linkX = nuevaX;
@@ -225,6 +227,8 @@ void ejecutar_partida() {
             if (salon_actual == 2 && linkX == 16 && linkY == 2 && !llave3_recogida)
                 { llave3_recogida = true; tiene_llave3 = true; }
         }
+
+        usleep(33000);
     }
 
     for (int i = 0; i < NUM_ENEMIGOS; i++) {
