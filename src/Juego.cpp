@@ -8,6 +8,7 @@
 #include "Enemigos.hpp"
 #include "Proyectiles.hpp"
 #include <ctime>
+#include "Menu.hpp"
 
 pthread_mutex_t mutex_jugador = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_proyectiles = PTHREAD_MUTEX_INITIALIZER;
@@ -23,8 +24,7 @@ DatosProyectil proyectiles_enemigos[MAX_PROYECTILES];
 bool tiene_llave1 = false, tiene_llave2 = false, tiene_llave3 = false;
 bool llave1_recogida = false, llave2_recogida = false, llave3_recogida = false;
 
-// Ejecutar partida 
-void ejecutar_partida() {
+void ejecutar_partida(bool modo_guiado) {
     srand(time(NULL));
     clear();
     linkX = 5;
@@ -78,6 +78,39 @@ void ejecutar_partida() {
     DatosProyectil flecha = {0, 0, '^', 0, false};
     pthread_t hilo_flecha;
 
+    char comandos_tutorial[] = {
+        'd','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d', 
+        's','s','s','s','s','s','s', 
+        
+        
+        's','s','s','s','s','s','s','s','s','s', 
+        'a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a',
+        
+        'w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w','w', 
+        'a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a', 
+        
+        'd','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d', 
+        's','s','s','s','s','s','s','s','s','s','s','s','s','s','s','s','s', 
+        'd', 
+
+        'd','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d', 
+
+        'w','w','w','w','w','w', 
+        'd','d','d','d','d','d','d','d','d','d','d','d','d','d','d', 
+
+        'a','a','a','a','a','a','a','a','a','a','a','a','a','a','a', 
+        's','s','s','s','s','s', 
+        'a', 
+
+        'a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a', 
+        's','s','s','s','s','s','s','s', 
+        'a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a','a', 
+        's','s','s','s','s','s','s','s','s','s','s','s','s','s','s','s','s','s','s', 
+        'd','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d', 
+        's' 
+    };
+    int idx_tutorial = 0;
+    bool victoria = false;
     bool en_partida = true;
     while (en_partida) {
         werase(juego_win);
@@ -139,7 +172,14 @@ void ejecutar_partida() {
         refresh();
         wrefresh(juego_win);
         
-        int tecla = wgetch(juego_win);
+        int tecla;
+        if (modo_guiado) {
+            usleep(200000);
+            tecla = comandos_tutorial[idx_tutorial];
+            idx_tutorial = (idx_tutorial + 1) % (int)sizeof(comandos_tutorial);
+        } else {
+            tecla = wgetch(juego_win);
+        }
         int nuevaX = linkX, nuevaY = linkY;
 
         switch (tecla) {
@@ -163,6 +203,8 @@ void ejecutar_partida() {
         }
 
         if (!en_partida) break;
+
+        if (nuevaY >= 0 && nuevaX >= 0 && nuevaY < alto && nuevaX < ancho) {
 
         char prox = mapa_ptr()[nuevaY][nuevaX];
 
@@ -236,12 +278,18 @@ void ejecutar_partida() {
             linkX = nuevaX;
             linkY = nuevaY;
             pthread_mutex_unlock(&mutex_jugador);
+            if (salon_actual == 3 && linkY == ALTO3 - 1) {
+                victoria = true;
+                en_partida = false;
+            }
             if (salon_actual == 0 && linkX == 24 && linkY == 9 && !llave1_recogida)
                 { llave1_recogida = true; tiene_llave1 = true; }
             if (salon_actual == 1 && linkX == 16 && linkY == 2 && !llave2_recogida)
                 { llave2_recogida = true; tiene_llave2 = true; }
             if (salon_actual == 2 && linkX == 16 && linkY == 2 && !llave3_recogida)
                 { llave3_recogida = true; tiene_llave3 = true; }
+        }
+
         }
 
         usleep(33000);
@@ -263,4 +311,8 @@ void ejecutar_partida() {
 
     clear();
     refresh();
+    if (victoria) {
+        mostrar_game_over(true);
+        getch();
+    }
 }

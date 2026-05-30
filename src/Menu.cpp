@@ -47,9 +47,9 @@ void mostrar_game_over(bool victoria) {
 
     if (victoria) {
         wattron(fin_win, COLOR_PAIR(1)); // Verde
-        mvwprintw(fin_win, 3, xWin / 2 - 5, "¡GANASTE!");
+        mvwprintw(fin_win, 3, xWin / 2 - 5, "¡VICTORIA!");
         wattroff(fin_win, COLOR_PAIR(1));
-        mvwprintw(fin_win, 5, xWin / 2 - 13, "Recuperaste la Trifuerza");
+        mvwprintw(fin_win, 5, xWin / 2 - 13, "Lograste escapar del templo");
     } else {
         wattron(fin_win, COLOR_PAIR(6)); // Rojo (Color 6 que definieron en main)
         mvwprintw(fin_win, 3, xWin / 2 - 5, "GAME OVER");
@@ -77,17 +77,23 @@ void mostrar_instrucciones() {
     mvwprintw(inst_win, 1, xWin / 2 - 7, "INSTRUCCIONES");
     mvwhline(inst_win, 2, 1, ACS_HLINE, xWin - 2);
 
-    mvwprintw(inst_win, 4, 3, "OBJETIVO: Explorar el laberinto y llegar a la zona final.");
-    
+    mvwprintw(inst_win, 4, 3, "OBJETIVO: Escapar por la salida sur del Salon 3.");
+
     mvwprintw(inst_win, 6, 3, "CONTROLES:");
     mvwprintw(inst_win, 7, 5, "W, A, S, D  - Mover a Link");
     mvwprintw(inst_win, 8, 5, "J           - Atacar con Espada");
-    mvwprintw(inst_win, 9, 5, "K           - Usar objeto secundario");
-    mvwprintw(inst_win, 10, 5, "ESC o Q     - Salir de la partida");
+    mvwprintw(inst_win, 9, 5, "K           - Disparar Proyectil");
+    mvwprintw(inst_win, 10, 5, "Q           - Salir de la partida");
 
-    mvwprintw(inst_win, 12, 3, "MECANICAS:");
-    mvwprintw(inst_win, 13, 5, "Recoge las llaves (K) esparcidas por los salones.");
-    mvwprintw(inst_win, 14, 5, "Cada llave abre una puerta (D) de su respectivo color.");
+    mvwprintw(inst_win, 12, 3, "ENEMIGOS:");
+    mvwprintw(inst_win, 13, 5, "'E' y 'X' se mueven solos y quitan vida al contacto.");
+
+    mvwprintw(inst_win, 15, 3, "LLAVES Y PUERTAS:");
+    mvwprintw(inst_win, 16, 5, "Recoge la llave 'K' de cada salon.");
+    mvwprintw(inst_win, 17, 5, "Cada llave abre su puerta ( | o / ) respectiva.");
+
+    mvwprintw(inst_win, 19, 3, "MODO GUIADO:");
+    mvwprintw(inst_win, 20, 5, "Al iniciar puedes elegir Modo Guiado (G) para ver a Link moverse automaticamente como demostracion.");
 
     mvwprintw(inst_win, yWin - 8, xWin / 2 - 22, "Presiona cualquier tecla para volver al menu");
 
@@ -140,9 +146,25 @@ void mostrar_puntajes_destacados() {
 
 void iniciar_juego() {
     clear();
-    //attron(COLOR_PAIR(1));
-    ejecutar_partida();
-    //attroff(COLOR_PAIR(1));
+    int yMax, xMax;
+    getmaxyx(stdscr, yMax, xMax);
+    WINDOW* modo_win = newwin(7, 42, (yMax - 7) / 2, (xMax - 42) / 2);
+    box(modo_win, 0, 0);
+    keypad(modo_win, TRUE);
+    mvwprintw(modo_win, 2, 4, "Modo Manual (M) o Modo Guiado (G)?");
+    mvwprintw(modo_win, 4, 14, "Presiona M o G");
+    wrefresh(modo_win);
+    int resp;
+    do { resp = wgetch(modo_win); } while (resp != 'm' && resp != 'M' && resp != 'g' && resp != 'G');
+    werase(modo_win);
+    wrefresh(modo_win);
+    delwin(modo_win);
+    clear();
+    refresh();
+    if (resp == 'g' || resp == 'G')
+        ejecutar_partida(true);
+    else
+        ejecutar_partida(false);
     refresh();
 }
 

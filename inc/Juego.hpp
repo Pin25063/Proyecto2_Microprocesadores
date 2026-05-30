@@ -44,7 +44,7 @@ extern int linkY;
 extern bool link_recibe_dano;
 extern DatosProyectil proyectiles_enemigos[MAX_PROYECTILES];
 
-void ejecutar_partida();
+void ejecutar_partida(bool modo_guiado);
 void dibujar_mapa(WINDOW* win);
 
 void dibujar_entidad(WINDOW* win, int y, int x, char simbolo, int par_color);
