@@ -358,8 +358,14 @@ void ejecutar_partida(bool modo_guiado) {
 
     clear();
     refresh();
+    
+    guardar_puntaje(puntaje); 
+
     if (victoria) {
         mostrar_game_over(true);
+        getch();
+    } else {
+        mostrar_game_over(false); 
         getch();
     }
 }

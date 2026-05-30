@@ -9,5 +9,6 @@ void mostrar_puntajes_destacados();
 void iniciar_juego();
 void menu_principal();
 void mostrar_game_over(bool victoria);
+void guardar_puntaje(int puntaje_final);
 
 #endif

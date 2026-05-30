@@ -5,6 +5,7 @@
 //#include <vector>
 #include <string>
 #include <fstream>
+#include <algorithm>
 
 void mostrar_diseno(WINDOW *ventana) {
     int xMax, yMax;
@@ -64,6 +65,14 @@ void mostrar_game_over(bool victoria) {
 
 }
 
+void guardar_puntaje(int puntaje_final) {
+    std::ofstream archivo("puntajes.txt", std::ios::app);
+    if (archivo.is_open()) {
+        archivo << "Link " << puntaje_final << "\n";
+        archivo.close();
+    }
+}
+
 void mostrar_instrucciones() {
     int yMax, xMax;
     getmaxyx(stdscr, yMax, xMax); 
@@ -108,6 +117,15 @@ void mostrar_instrucciones() {
     refresh();
 }
 
+struct PuntajeRegistro {
+    std::string nombre;
+    int puntos;
+};
+
+bool compararPuntajes(const PuntajeRegistro& a, const PuntajeRegistro& b) {
+    return a.puntos > b.puntos;
+}
+
 void mostrar_puntajes_destacados() {
     int yMax, xMax;
     getmaxyx(stdscr, yMax, xMax);
@@ -120,26 +138,40 @@ void mostrar_puntajes_destacados() {
 
     mvwprintw(score_win, 1, xWin / 2 - 8, "PUNTAJES DESTACADOS");
     mvwhline(score_win, 2, 1, ACS_HLINE, xWin - 2);
-
     mvwprintw(score_win, 4, xWin / 2 - 11, "JUGADOR         PUNTAJE");
     mvwhline(score_win, 5, xWin / 2 - 11, '-', 23);
 
-    // Datos simulados agregados a la tabla
-    mvwprintw(score_win, 6, xWin / 2 - 15, "1. Jugador 1         9500 pts");
-    mvwprintw(score_win, 7, xWin / 2 - 15, "2. Jugador 2         8200 pts");
-    mvwprintw(score_win, 8, xWin / 2 - 15, "3. Jugador 3         7100 pts");
-    mvwprintw(score_win, 9, xWin / 2 - 15, "4. Jugador 4         5000 pts");
-    mvwprintw(score_win, 10, xWin / 2 - 15, "5. Jugador 5         4300 pts");
+    std::vector<PuntajeRegistro> lista_puntajes;
+    std::ifstream archivo("puntajes.txt");
+    
+    if (archivo.is_open()) {
+        std::string nom;
+        int pts;
+        // Leer el archivo
+        while (archivo >> nom >> pts) {
+            lista_puntajes.push_back({nom, pts});
+        }
+        archivo.close();
+
+        // Ordenar de mayor a menor
+        std::sort(lista_puntajes.begin(), lista_puntajes.end(), compararPuntajes);
+
+        // Mostrar el Top 5
+        int filas_a_mostrar = (lista_puntajes.size() < 5) ? lista_puntajes.size() : 5;
+        for (int i = 0; i < filas_a_mostrar; i++) {
+            mvwprintw(score_win, 6 + i, xWin / 2 - 15, "%d. %-15s %d pts", i + 1, lista_puntajes[i].nombre.c_str(), lista_puntajes[i].puntos);
+        }
+    } else {
+        mvwprintw(score_win, 7, xWin / 2 - 14, "No hay puntajes registrados.");
+    }
 
     mvwprintw(score_win, yWin - 8, xWin / 2 - 22, "Presiona cualquier tecla para volver al menu");
-
     mostrar_diseno(score_win);
 
     wgetch(score_win); 
     werase(score_win);
     wrefresh(score_win);
     delwin(score_win);
-
     clear();
     refresh();
 }
