@@ -3,6 +3,7 @@
 extern bool tiene_llave1;
 extern bool tiene_llave2;
 extern bool tiene_llave3;
+#include "Juego.hpp"
 
 void dibujar_entidad(WINDOW* win, int y, int x, char simbolo, int par_color) {
     wattron(win, COLOR_PAIR(par_color));
@@ -18,15 +19,47 @@ void borrar_entidad(WINDOW* win, int y, int x) {
 
 void dibujar_ataque(WINDOW* win, int linkY, int linkX, char orientacion) {
     wattron(win, COLOR_PAIR(2)); 
+    int ataqueX = linkX;
+    int ataqueY = linkY;
+
     if (orientacion == '^') {
-        mvwaddch(win, linkY - 1, linkX, '|'); 
+        mvwaddch(win, linkY - 1, linkX, '|');
+        ataqueY--;
     } else if (orientacion == 'v') {
         mvwaddch(win, linkY + 1, linkX, '|'); 
+        ataqueY++;
     } else if (orientacion == '<') {
         mvwaddch(win, linkY, linkX - 1, '-'); 
+        ataqueX--;
     } else if (orientacion == '>') {
-        mvwaddch(win, linkY, linkX + 1, '-'); 
+        mvwaddch(win, linkY, linkX + 1, '-');
+        ataqueX++; 
     }
+
+    pthread_mutex_lock(&mutex_enemigos);
+
+    for (int i = 0; i < NUM_ENEMIGOS; i++) {
+        if (!enemigos[i].vivo) {
+            continue;
+        }
+
+        if (enemigos[i].salon_pertenece != salon_actual) {
+            continue;
+        }
+
+        if (enemigos[i].x == ataqueX && enemigos[i].y == ataqueY) {
+            enemigos[i].vida--;
+
+            if (enemigos[i].vida > 0) {
+                puntaje += 5;
+            } else {
+                enemigos[i].vivo = false;
+                puntaje += 10;
+            }
+        }
+    }
+
+    pthread_mutex_unlock(&mutex_enemigos);
     wattroff(win, COLOR_PAIR(2));
     
     wrefresh(win); 

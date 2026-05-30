@@ -20,6 +20,13 @@ int linkX = 5;
 int linkY = 2;
 bool link_recibe_dano = false;
 DatosProyectil proyectiles_enemigos[MAX_PROYECTILES];
+DatosEnemigo enemigos[NUM_ENEMIGOS];
+
+int vida_link = 5;
+int puntaje = 0;
+
+bool invulnerable = false;
+int frames_invulnerable = 0;
 
 bool tiene_llave1 = false, tiene_llave2 = false, tiene_llave3 = false;
 bool llave1_recogida = false, llave2_recogida = false, llave3_recogida = false;
@@ -33,6 +40,11 @@ void ejecutar_partida(bool modo_guiado) {
     salon_actual = 0;
     tiene_llave1 = tiene_llave2 = tiene_llave3 = false;
     llave1_recogida = llave2_recogida = llave3_recogida = false;
+    vida_link = 5;
+    puntaje = 0;
+    invulnerable = false;
+    frames_invulnerable = 0;
+    puntaje = 0;
 
     int yMax, xMax;
     getmaxyx(stdscr, yMax, xMax);
@@ -46,28 +58,30 @@ void ejecutar_partida(bool modo_guiado) {
 
     char link_char = 'v';
 
-    const int NUM_ENEMIGOS = 16;
-    DatosEnemigo enemigos[NUM_ENEMIGOS] = {
-        {20, 5, 'E', 0, true, rand() % 4},
-        {35, 12, 'X', 0, true, rand() % 4},
-        {10, 15, 'E', 0, true, rand() % 4},
-        {40, 3, 'X', 0, true, rand() % 4},
+    DatosEnemigo enemigos_temp[NUM_ENEMIGOS] = {
+        {20, 5, 'E', 0, true, rand() % 4, 0, 3},
+        {35, 12, 'X', 0, true, rand() % 4, 1, 3},
+        {10, 15, 'E', 0, true, rand() % 4, 2, 3},
+        {40, 3, 'X', 0, true, rand() % 4, 3, 3},
 
-        {10, 5, 'E', 1, true, rand() % 4},
-        {20, 8, 'X', 1, true, rand() % 4},
-        {5, 10, 'E', 1, true, rand() % 4},
-        {25, 3, 'X', 1, true, rand() % 4},
+        {10, 5, 'E', 1, true, rand() % 4, 4, 3},
+        {20, 8, 'X', 1, true, rand() % 4, 5, 3},
+        {5, 10, 'E', 1, true, rand() % 4, 6, 3},
+        {25, 3, 'X', 1, true, rand() % 4, 7, 3},
 
-        {15, 6, 'E', 2, true, rand() % 4},
-        {25, 10, 'X', 2, true, rand() % 4},
-        {5, 4, 'E', 2, true, rand() % 4},
-        {45, 8, 'X', 2, true, rand() % 4},
+        {15, 6, 'E', 2, true, rand() % 4, 8, 3},
+        {25, 10, 'X', 2, true, rand() % 4, 9, 3},
+        {5, 4, 'E', 2, true, rand() % 4, 10, 3},
+        {45, 8, 'X', 2, true, rand() % 4, 11, 3},
 
-        {10, 5, 'E', 3, true, rand() % 4},
-        {20, 10, 'X', 3, true, rand() % 4},
-        {8, 12, 'E', 3, true, rand() % 4},
-        {25, 4, 'X', 3, true, rand() % 4}
+        {10, 5, 'E', 3, true, rand() % 4, 12, 3},
+        {20, 10, 'X', 3, true, rand() % 4, 13, 3},
+        {8, 12, 'E', 3, true, rand() % 4, 14, 3},
+        {25, 4, 'X', 3, true, rand() % 4, 15, 3}
     };
+    for (int i = 0; i < NUM_ENEMIGOS; i++) {
+        enemigos[i] = enemigos_temp[i];
+    }
 
     pthread_t hilos_enemigos[NUM_ENEMIGOS];
 
@@ -170,7 +184,18 @@ void ejecutar_partida(bool modo_guiado) {
         mvprintw(yMax - 2, (xMax - 50) / 2,
                  "Utiliza W, A, S, D para moverte y presiona Q para salir");
         refresh();
-        wrefresh(juego_win);
+
+        wattron(stdscr, COLOR_PAIR(6));
+        std::string corazones = "";
+        for (int i = 0; i < vida_link; i++) {
+            corazones += "<3 ";
+        }
+        mvprintw(yMax - 4, xMax / 2 - 40, "Vida: %s", corazones.c_str());
+        wattroff(stdscr, COLOR_PAIR(6));
+
+        wattron(stdscr, COLOR_PAIR(4));
+        mvprintw(yMax - 4, xMax / 2 + 26, "Puntaje: %d", puntaje);
+        wattroff(stdscr, COLOR_PAIR(4));
         
         int tecla;
         if (modo_guiado) {
@@ -203,6 +228,9 @@ void ejecutar_partida(bool modo_guiado) {
         }
 
         if (!en_partida) break;
+        if (vida_link <= 0) {
+            en_partida = false;
+        }
 
         if (nuevaY >= 0 && nuevaX >= 0 && nuevaY < alto && nuevaX < ancho) {
 
@@ -263,6 +291,7 @@ void ejecutar_partida(bool modo_guiado) {
             if (ok) {
                 pthread_mutex_lock(&mutex_salon);
                 salon_actual = ns;
+                puntaje += 25;
                 pthread_mutex_unlock(&mutex_salon);
                 linkX = sx;
                 linkY = sy;
@@ -279,19 +308,37 @@ void ejecutar_partida(bool modo_guiado) {
             linkY = nuevaY;
             pthread_mutex_unlock(&mutex_jugador);
             if (salon_actual == 3 && linkY == ALTO3 - 1) {
+                puntaje += 50;
                 victoria = true;
                 en_partida = false;
             }
-            if (salon_actual == 0 && linkX == 24 && linkY == 9 && !llave1_recogida)
-                { llave1_recogida = true; tiene_llave1 = true; }
-            if (salon_actual == 1 && linkX == 16 && linkY == 2 && !llave2_recogida)
-                { llave2_recogida = true; tiene_llave2 = true; }
-            if (salon_actual == 2 && linkX == 16 && linkY == 2 && !llave3_recogida)
-                { llave3_recogida = true; tiene_llave3 = true; }
+            if (salon_actual == 0 && linkX == 24 && linkY == 9 && !llave1_recogida) {
+                llave1_recogida = true;
+                tiene_llave1 = true;
+                puntaje += 20;
+            }
+            if (salon_actual == 1 && linkX == 16 && linkY == 2 && !llave2_recogida) {
+                llave2_recogida = true;
+                tiene_llave2 = true;
+                puntaje += 20;
+            }
+            if (salon_actual == 2 && linkX == 16 && linkY == 2 && !llave3_recogida) {
+                llave3_recogida = true;
+                tiene_llave3 = true;
+                puntaje += 20;
+            }
         }
 
         }
 
+        if (invulnerable) {
+            frames_invulnerable++;
+
+            if (frames_invulnerable > 30) {
+                invulnerable = false;
+                frames_invulnerable = 0;
+            }
+        }
         usleep(33000);
     }
 

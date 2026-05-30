@@ -5,6 +5,9 @@ extern int linkX;
 extern int linkY;
 extern bool link_recibe_dano;
 extern DatosProyectil proyectiles_enemigos[];
+extern int vida_link;
+extern bool invulnerable;
+extern int frames_invulnerable;
 
 void* mover_enemigo(void* arg) {
     DatosEnemigo* enemigo = (DatosEnemigo*)arg;
@@ -37,6 +40,12 @@ void* mover_enemigo(void* arg) {
 
             pthread_mutex_lock(&mutex_jugador);
             if (nuevaX == linkX && nuevaY == linkY) {
+                if (!invulnerable) {
+                    vida_link--;
+                    invulnerable = true;
+                    frames_invulnerable = 0;
+                }
+
                 link_recibe_dano = true;
                 if (direccion == 0) {
                     enemigo->y++;

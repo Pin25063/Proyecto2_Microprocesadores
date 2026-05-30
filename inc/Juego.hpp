@@ -18,6 +18,8 @@ struct DatosEnemigo {
     int salon_pertenece;
     bool vivo;
     int direccion;
+    int id;
+    int vida;
 };
 
 struct DatosProyectil {
@@ -43,6 +45,9 @@ extern int linkX;
 extern int linkY;
 extern bool link_recibe_dano;
 extern DatosProyectil proyectiles_enemigos[MAX_PROYECTILES];
+const int NUM_ENEMIGOS = 16;
+extern DatosEnemigo enemigos[NUM_ENEMIGOS];
+extern int puntaje;
 
 void ejecutar_partida(bool modo_guiado);
 void dibujar_mapa(WINDOW* win);
