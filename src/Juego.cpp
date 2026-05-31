@@ -187,6 +187,7 @@ void ejecutar_partida(bool modo_guiado) {
         mvprintw(yMax - 2, (xMax - 50) / 2,
                  "Utiliza W, A, S, D para moverte y presiona Q para salir");
         refresh();
+        wrefresh(juego_win);
 
         wattron(stdscr, COLOR_PAIR(6));
         std::string corazones = "";
