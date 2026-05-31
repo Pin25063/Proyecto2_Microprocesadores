@@ -31,7 +31,7 @@ int frames_invulnerable = 0;
 bool tiene_llave1 = false, tiene_llave2 = false, tiene_llave3 = false;
 bool llave1_recogida = false, llave2_recogida = false, llave3_recogida = false;
 
-void ejecutar_partida(bool modo_guiado) {
+bool ejecutar_partida(bool modo_guiado) {
     srand(time(NULL));
     clear();
     linkX = 5;
@@ -45,6 +45,7 @@ void ejecutar_partida(bool modo_guiado) {
     invulnerable = false;
     frames_invulnerable = 0;
     puntaje = 0;
+    bool salida_manual = false;
 
     for (int i = 0; i < MAX_PROYECTILES; i++) {
         proyectiles_enemigos[i].activo = false;
@@ -219,6 +220,7 @@ void ejecutar_partida(bool modo_guiado) {
         int tecla = wgetch(juego_win);
 
         if (tecla == 'q' || tecla == 'Q') {
+            salida_manual = true;
             en_partida = false;
             break;
         }
@@ -393,13 +395,25 @@ void ejecutar_partida(bool modo_guiado) {
     clear();
     refresh();
     
-    guardar_puntaje(puntaje); 
+    guardar_puntaje(puntaje);
 
-    if (victoria) {
-        mostrar_game_over(true);
-        getch();
-    } else {
-        mostrar_game_over(false); 
-        getch();
+    if (salida_manual) {
+        return false;
     }
+
+    if (victoria)
+        mostrar_game_over(true, puntaje);
+    else
+        mostrar_game_over(false, puntaje);
+
+    char tecla;
+    do {
+        tecla = getch();
+    }
+    while (tecla != 'r' &&
+        tecla != 'R' &&
+        tecla != 'q' &&
+        tecla != 'Q');
+
+    return (tecla == 'r' || tecla == 'R');
 }

@@ -37,7 +37,7 @@ void mostrar_diseno(WINDOW *ventana) {
     wattroff(ventana, COLOR_PAIR(2));
 }
 
-void mostrar_game_over(bool victoria) {
+void mostrar_game_over(bool victoria, int puntaje) {
     int yMax, xMax;
     getmaxyx(stdscr, yMax, xMax);
     WINDOW *fin_win = newwin(10, 40, (yMax - 10) / 2, (xMax - 40) / 2);
@@ -51,6 +51,7 @@ void mostrar_game_over(bool victoria) {
         mvwprintw(fin_win, 3, xWin / 2 - 5, "¡VICTORIA!");
         wattroff(fin_win, COLOR_PAIR(1));
         mvwprintw(fin_win, 5, xWin / 2 - 13, "Lograste escapar del templo");
+        mvwprintw(fin_win, 6, xWin / 2 - 8, "Puntaje: %d", puntaje);
     } else {
         wattron(fin_win, COLOR_PAIR(6)); // Rojo (Color 6 que definieron en main)
         mvwprintw(fin_win, 3, xWin / 2 - 5, "GAME OVER");
@@ -193,11 +194,14 @@ void iniciar_juego() {
     delwin(modo_win);
     clear();
     refresh();
-    if (resp == 'g' || resp == 'G')
-        ejecutar_partida(true);
-    else
-        ejecutar_partida(false);
-    refresh();
+    bool reiniciar;
+    do {
+        if (resp == 'g' || resp == 'G')
+            reiniciar = ejecutar_partida(true);
+        else
+            reiniciar = ejecutar_partida(false);
+
+    } while (reiniciar);
 }
 
 void menu_principal() {

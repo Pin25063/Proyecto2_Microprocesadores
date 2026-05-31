@@ -8,7 +8,7 @@ void mostrar_instrucciones();
 void mostrar_puntajes_destacados();
 void iniciar_juego();
 void menu_principal();
-void mostrar_game_over(bool victoria);
+void mostrar_game_over(bool victoria, int puntaje);
 void guardar_puntaje(int puntaje_final);
 
 #endif

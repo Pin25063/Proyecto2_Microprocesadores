@@ -50,7 +50,7 @@ const int NUM_ENEMIGOS = 18;
 extern DatosEnemigo enemigos[NUM_ENEMIGOS];
 extern int puntaje;
 
-void ejecutar_partida(bool modo_guiado);
+bool ejecutar_partida(bool modo_guiado);
 void dibujar_mapa(WINDOW* win);
 
 void dibujar_entidad(WINDOW* win, int y, int x, char simbolo, int par_color);
