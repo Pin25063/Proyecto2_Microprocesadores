@@ -216,20 +216,19 @@ void ejecutar_partida(bool modo_guiado) {
         refresh();
         wrefresh(juego_win);
 
-        int tecla_real = wgetch(juego_win);
-        if (tecla_real == 'q' || tecla_real == 'Q') {
+        int tecla = wgetch(juego_win);
+
+        if (tecla == 'q' || tecla == 'Q') {
             en_partida = false;
             break;
         }
 
-        int tecla;
         if (modo_guiado) {
             usleep(200000);
             tecla = comandos_tutorial[idx_tutorial];
             idx_tutorial = (idx_tutorial + 1) % (int)sizeof(comandos_tutorial);
-        } else {
-            tecla = wgetch(juego_win);
         }
+
         int nuevaX = linkX, nuevaY = linkY;
 
         switch (tecla) {
