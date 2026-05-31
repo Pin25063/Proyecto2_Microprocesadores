@@ -1,3 +1,9 @@
+/*
+Implementación de las pantallas de interfaz del juego
+Maneja el menú principal, instrucciones, puntajes 
+destacados, selección de modo de juego y pantallas de victoria o derrota
+*/
+
 #include "Menu.hpp"
 #include "Juego.hpp"
 #include <ncurses.h>
@@ -7,6 +13,7 @@
 #include <fstream>
 #include <algorithm>
 
+// Dibuja elementos decorativos reutilizados en las distintas ventanas del menú utilizando ASCII-Art
 void mostrar_diseno(WINDOW *ventana) {
     int xMax, yMax;
     getmaxyx(ventana, yMax, xMax);
@@ -37,6 +44,7 @@ void mostrar_diseno(WINDOW *ventana) {
     wattroff(ventana, COLOR_PAIR(2));
 }
 
+// muestra la pantalla final de la partida
 void mostrar_game_over(bool victoria, int puntaje) {
     int yMax, xMax;
     getmaxyx(stdscr, yMax, xMax);
@@ -66,6 +74,7 @@ void mostrar_game_over(bool victoria, int puntaje) {
 
 }
 
+// guarda el nombre del jugador y puntaje obtenido en el .txt
 void guardar_puntaje(int puntaje_final) {
     std::ofstream archivo("puntajes.txt", std::ios::app);
     if (archivo.is_open()) {
@@ -118,15 +127,17 @@ void mostrar_instrucciones() {
     refresh();
 }
 
-struct PuntajeRegistro {
+struct PuntajeRegistro { //estructura usada para el registro de puntajes
     std::string nombre;
     int puntos;
 };
 
+// función auxiliar para ordenar los puntajes de mayor a menor
 bool compararPuntajes(const PuntajeRegistro& a, const PuntajeRegistro& b) {
     return a.puntos > b.puntos;
 }
 
+// lee el archivo y muestra el top 5 de los mejores puntajes
 void mostrar_puntajes_destacados() {
     int yMax, xMax;
     getmaxyx(stdscr, yMax, xMax);
@@ -177,6 +188,7 @@ void mostrar_puntajes_destacados() {
     refresh();
 }
 
+
 void iniciar_juego() {
     clear();
     int yMax, xMax;
@@ -184,7 +196,7 @@ void iniciar_juego() {
     WINDOW* modo_win = newwin(7, 42, (yMax - 7) / 2, (xMax - 42) / 2);
     box(modo_win, 0, 0);
     keypad(modo_win, TRUE);
-    mvwprintw(modo_win, 2, 4, "Modo Manual (M) o Modo Guiado (G)?");
+    mvwprintw(modo_win, 2, 4, "Modo Manual (M) o Modo Guiado (G)?"); //solicita el modo de juego
     mvwprintw(modo_win, 4, 14, "Presiona M o G");
     wrefresh(modo_win);
     int resp;
@@ -193,7 +205,7 @@ void iniciar_juego() {
     wrefresh(modo_win);
     delwin(modo_win);
 
-    if (resp == 'm' || resp == 'M') {
+    if (resp == 'm' || resp == 'M') { //si el modo es manual se solicita el nombre del usuario
         echo();
         curs_set(1);
 
@@ -215,11 +227,11 @@ void iniciar_juego() {
         delwin(nombre_win);
     }
     else {
-        nombre_jugador = "Tutorial";
+        nombre_jugador = "Tutorial"; // si el modo es guiado se pone un nombre estándar
     }
     clear();
     refresh();
-    bool reiniciar;
+    bool reiniciar; // maneja la lógica de reinicio
     do {
         if (resp == 'g' || resp == 'G')
             reiniciar = ejecutar_partida(true);
@@ -229,7 +241,7 @@ void iniciar_juego() {
     } while (reiniciar);
 }
 
-void menu_principal() {
+void menu_principal() { // permite acceder a las diferentes ventanas
 
     const int TOTAL_OPCIONES = 4;
 

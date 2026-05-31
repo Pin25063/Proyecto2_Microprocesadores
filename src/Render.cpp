@@ -1,3 +1,10 @@
+/*
+Módulo encargado del renderizado de elementos visuales
+Contiene las funciones utilizadas para dibujar entidades,
+ataques, puertas y mapas dentro de la ventana principal
+del juego
+*/
+
 #include "Render.hpp"
 
 extern bool tiene_llave1;

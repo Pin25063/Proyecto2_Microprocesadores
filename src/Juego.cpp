@@ -1,3 +1,10 @@
+/*
+Contiene la lógica general de ejecución de una partida,
+la inicialización de recursos compartidos, la creación
+de hilos, el procesamiento de entradas del jugador,
+el control de colisiones y la condición de victoria o derrota
+*/
+
 #include "Juego.hpp"
 #include <string>
 #include <unistd.h>
@@ -10,11 +17,13 @@
 #include <ctime>
 #include "Menu.hpp"
 
+// mutex usados para sincronizar el acceso a recursos compartidos entre los distintos hilos del juego
 pthread_mutex_t mutex_jugador = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_proyectiles = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_enemigos = PTHREAD_MUTEX_INITIALIZER;
 pthread_mutex_t mutex_salon = PTHREAD_MUTEX_INITIALIZER;
 
+//Estado global de la partida: posición del jugador, enemigos, proyectiles, llaves recolectadas, puntaje y vida
 int salon_actual = 0;
 int linkX = 5;
 int linkY = 2;
@@ -33,7 +42,18 @@ bool llave1_recogida = false, llave2_recogida = false, llave3_recogida = false;
 
 std::string nombre_jugador = "Link";
 
+/*
+Función principal del juego
+
+modo_guiado indica si la partida será controlada 
+por el jugador o por la computador
+
+Retorna true si se desea reiniciar la partida
+y false si se regresa al menu principal
+*/
+
 bool ejecutar_partida(bool modo_guiado) {
+    // reinicialización del estado del juego
     srand(time(NULL));
     clear();
     linkX = 5;
@@ -49,11 +69,13 @@ bool ejecutar_partida(bool modo_guiado) {
     puntaje = 0;
     bool salida_manual = false;
 
+    //Inicialización de proyectiles enemigos
     for (int i = 0; i < MAX_PROYECTILES; i++) {
         proyectiles_enemigos[i].activo = false;
         proyectiles_enemigos[i].es_enemigo = true;
     }
 
+    //Creación de la ventana principal de juego
     int yMax, xMax;
     getmaxyx(stdscr, yMax, xMax);
 
@@ -65,7 +87,7 @@ bool ejecutar_partida(bool modo_guiado) {
     nodelay(juego_win, TRUE);
 
     char link_char = 'v';
-
+    //Configuración inicial de enemigos y estadísticas
     DatosEnemigo enemigos_temp[NUM_ENEMIGOS] = {
         {20, 5, 'E', 0, true, rand() % 4, 0, 3},
         {35, 12, 'X', 0, true, rand() % 4, 1, 3},
@@ -94,6 +116,7 @@ bool ejecutar_partida(bool modo_guiado) {
         enemigos[i] = enemigos_temp[i];
     }
 
+    //Creación de hilos independientes para cada enemigo    
     pthread_t hilos_enemigos[NUM_ENEMIGOS];
 
     for (int i = 0; i < NUM_ENEMIGOS; i++) {
@@ -103,6 +126,7 @@ bool ejecutar_partida(bool modo_guiado) {
     DatosProyectil flecha = {0, 0, '^', 0, false};
     pthread_t hilo_flecha;
 
+    //Secuencia automática utilizada por el modo guiado
     char comandos_tutorial[] = {
         'd','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d','d', 
         's','s','s','s','s','s','s', 
@@ -150,13 +174,13 @@ bool ejecutar_partida(bool modo_guiado) {
     bool en_partida = true;
     
     int frame = 0;
-    while (en_partida) {
+    while (en_partida) { // bucle principal
         frame++;
         werase(juego_win);
 
-        dibujar_mapa(juego_win);
+        dibujar_mapa(juego_win); // renderizado del mapa
 
-        if (salon_actual == 0 && !llave1_recogida) {
+        if (salon_actual == 0 && !llave1_recogida) { //dibujo de llaves disponibles en cada salón
             wattron(juego_win, COLOR_PAIR(5));
             mvwaddch(juego_win, 9, 24, 'K');
             wattroff(juego_win, COLOR_PAIR(5));
@@ -174,7 +198,7 @@ bool ejecutar_partida(bool modo_guiado) {
 
         pthread_mutex_lock(&mutex_jugador);
         bool dibujar_rojo = false;
-
+        //Renderizado del jugador y efecto visual de daño
         if (invulnerable) {
             dibujar_rojo = (frames_invulnerable % 4 < 2);
         }
@@ -191,6 +215,7 @@ bool ejecutar_partida(bool modo_guiado) {
         }
         pthread_mutex_unlock(&mutex_jugador);
 
+        //Dibujo de enemigos activos
         pthread_mutex_lock(&mutex_enemigos);
         for (int i = 0; i < NUM_ENEMIGOS; i++) {
             if (salon_actual == enemigos[i].salon_pertenece && enemigos[i].vivo) {
@@ -200,6 +225,7 @@ bool ejecutar_partida(bool modo_guiado) {
         }
         pthread_mutex_unlock(&mutex_enemigos);
 
+        //Dibujo de proyectiles del jugador y enemigos
         if (flecha.activo && salon_actual == flecha.salon_pertenece) {
             dibujar_entidad(juego_win, flecha.y, flecha.x, '*', 3);
         }
@@ -215,6 +241,7 @@ bool ejecutar_partida(bool modo_guiado) {
         mvprintw(yMax - 2, (xMax - 50) / 2,
                  "Utiliza W, A, S, D para moverte y presiona Q para salir");
 
+        //Actualización de vida y puntaje
         pthread_mutex_lock(&mutex_jugador);
         int vida_actual = vida_link;
         pthread_mutex_unlock(&mutex_jugador);
@@ -236,6 +263,7 @@ bool ejecutar_partida(bool modo_guiado) {
         refresh();
         wrefresh(juego_win);
 
+        // lectura de entrada del jugador
         int tecla = wgetch(juego_win);
 
         if (tecla == 'q' || tecla == 'Q') {
@@ -244,7 +272,7 @@ bool ejecutar_partida(bool modo_guiado) {
             break;
         }
 
-        if (modo_guiado) {
+        if (modo_guiado) { //Ejecución automática de movimientos en modo guiado
             usleep(200000);
             tecla = comandos_tutorial[idx_tutorial];
             idx_tutorial = (idx_tutorial + 1) % (int)sizeof(comandos_tutorial);
@@ -252,7 +280,7 @@ bool ejecutar_partida(bool modo_guiado) {
 
         int nuevaX = linkX, nuevaY = linkY;
 
-        switch (tecla) {
+        switch (tecla) { // Procesamiento de movimiento y acciones
             case 'w': case 'W': nuevaY--; link_char = '^'; break;
             case 's': case 'S': nuevaY++; link_char = 'v'; break;
             case 'a': case 'A': nuevaX--; link_char = '<'; break;
@@ -275,7 +303,7 @@ bool ejecutar_partida(bool modo_guiado) {
 
         if (!en_partida) break;
 
-        if (vida_link <= 0) {
+        if (vida_link <= 0) { // Verificación de derrota por pérdida de vida
             en_partida = false;
         }
 
@@ -283,6 +311,7 @@ bool ejecutar_partida(bool modo_guiado) {
 
         char prox = mapa_ptr()[nuevaY][nuevaX];
 
+        //Detección de colisiones con paredes, puertas y transiciones entre habitaciones
         if (prox == '|' || prox == '/') {
             // Determinar destino según salón actual
             bool ok = false;
@@ -367,6 +396,7 @@ bool ejecutar_partida(bool modo_guiado) {
                 en_partida = false;
             }
             
+            //Recolección de llaves y verificación de condición de victoria
             if (salon_actual == 0 && linkX == 24 && linkY == 9 && !llave1_recogida) {
                 llave1_recogida = true;
                 tiene_llave1 = true;
@@ -386,7 +416,7 @@ bool ejecutar_partida(bool modo_guiado) {
 
         }
 
-        if (invulnerable) {
+        if (invulnerable) { // Control temporal de invulnerabilidad
             frames_invulnerable++;
 
             if (frames_invulnerable > 30) {
@@ -397,6 +427,7 @@ bool ejecutar_partida(bool modo_guiado) {
         usleep(33000);
     }
 
+    //Finalización de todos los hilos activos
     for (int i = 0; i < NUM_ENEMIGOS; i++) {
         enemigos[i].vivo = false;
         pthread_join(hilos_enemigos[i], NULL);
@@ -414,13 +445,14 @@ bool ejecutar_partida(bool modo_guiado) {
     clear();
     refresh();
     
-    guardar_puntaje(puntaje);
+    guardar_puntaje(puntaje); // Registro del puntaje obtenido
 
     if (salida_manual) {
         return false;
     }
 
-    if (victoria)
+    //Presentación de pantalla final y decisión de reinicio o salida
+    if (victoria) 
         mostrar_game_over(true, puntaje);
     else
         mostrar_game_over(false, puntaje);
