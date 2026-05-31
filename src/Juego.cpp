@@ -216,6 +216,12 @@ void ejecutar_partida(bool modo_guiado) {
         refresh();
         wrefresh(juego_win);
 
+        int tecla_real = wgetch(juego_win);
+        if (tecla_real == 'q' || tecla_real == 'Q') {
+            en_partida = false;
+            break;
+        }
+
         int tecla;
         if (modo_guiado) {
             usleep(200000);
@@ -248,8 +254,6 @@ void ejecutar_partida(bool modo_guiado) {
         }
 
         if (!en_partida) break;
-
-        mvprintw(1, 1, "Vida actual: %d", vida_link);
 
         if (vida_link <= 0) {
             en_partida = false;
