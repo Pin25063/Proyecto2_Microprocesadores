@@ -4,6 +4,7 @@
 #include <ncurses.h>
 #include <vector>
 #include <pthread.h>
+#include <string>
 
 struct Entidad {
     int x;
@@ -59,5 +60,7 @@ void dibujar_ataque(WINDOW* win, int linkY, int linkX, char orientacion);
 
 void* mover_enemigo(void* arg);
 void* mover_proyectil(void* arg);
+
+extern std::string nombre_jugador;
 
 #endif

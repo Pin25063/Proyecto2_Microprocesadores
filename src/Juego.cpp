@@ -31,6 +31,8 @@ int frames_invulnerable = 0;
 bool tiene_llave1 = false, tiene_llave2 = false, tiene_llave3 = false;
 bool llave1_recogida = false, llave2_recogida = false, llave3_recogida = false;
 
+std::string nombre_jugador = "Link";
+
 bool ejecutar_partida(bool modo_guiado) {
     srand(time(NULL));
     clear();
@@ -160,13 +162,19 @@ bool ejecutar_partida(bool modo_guiado) {
         }
 
         pthread_mutex_lock(&mutex_jugador);
-        if (link_recibe_dano) {
-            wattron(juego_win, COLOR_PAIR(6)); 
+        bool dibujar_rojo = false;
+
+        if (invulnerable) {
+            dibujar_rojo = (frames_invulnerable % 4 < 2);
+        }
+
+        if (dibujar_rojo) {
+            wattron(juego_win, COLOR_PAIR(6));
             mvwaddch(juego_win, linkY, linkX, link_char);
             wattroff(juego_win, COLOR_PAIR(6));
-            link_recibe_dano = false; 
-        } else {
-            wattron(juego_win, COLOR_PAIR(1)); 
+        }
+        else {
+            wattron(juego_win, COLOR_PAIR(1));
             mvwaddch(juego_win, linkY, linkX, link_char);
             wattroff(juego_win, COLOR_PAIR(1));
         }

@@ -69,7 +69,7 @@ void mostrar_game_over(bool victoria, int puntaje) {
 void guardar_puntaje(int puntaje_final) {
     std::ofstream archivo("puntajes.txt", std::ios::app);
     if (archivo.is_open()) {
-        archivo << "Link " << puntaje_final << "\n";
+        archivo << nombre_jugador << " " << puntaje_final << "\n";
         archivo.close();
     }
 }
@@ -192,6 +192,31 @@ void iniciar_juego() {
     werase(modo_win);
     wrefresh(modo_win);
     delwin(modo_win);
+
+    if (resp == 'm' || resp == 'M') {
+        echo();
+        curs_set(1);
+
+        WINDOW* nombre_win = newwin(7, 40, (yMax - 7) / 2, (xMax - 40) / 2);
+        box(nombre_win, 0, 0);
+        mvwprintw(nombre_win, 2, 3, "Ingresa tu nombre: ");
+        wrefresh(nombre_win);
+
+        char buffer[20];
+        wgetnstr(nombre_win, buffer, 19);
+        nombre_jugador = buffer;
+        if (nombre_jugador.empty()) {
+            nombre_jugador = "Link";
+        }
+        noecho();
+        curs_set(0);
+        werase(nombre_win);
+        wrefresh(nombre_win);
+        delwin(nombre_win);
+    }
+    else {
+        nombre_jugador = "Tutorial";
+    }
     clear();
     refresh();
     bool reiniciar;
