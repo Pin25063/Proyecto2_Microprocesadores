@@ -28,6 +28,7 @@ struct DatosProyectil {
     char orientacion;
     int salon_pertenece;
     bool activo;
+    bool es_enemigo;
 };
 
 const int MAX_PROYECTILES = 16;

@@ -58,7 +58,7 @@ void mostrar_game_over(bool victoria) {
         mvwprintw(fin_win, 5, xWin / 2 - 12, "Link ha sido derrotado...");
     }
 
-    mvwprintw(fin_win, 8, xWin / 2 - 16, "Presiona R para reiniciar o Q salir");
+    mvwprintw(fin_win, 8, xWin / 2 - 17, "Presiona R para reiniciar o Q salir");
     
     wrefresh(fin_win);
     

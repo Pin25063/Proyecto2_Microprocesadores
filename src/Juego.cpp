@@ -46,6 +46,11 @@ void ejecutar_partida(bool modo_guiado) {
     frames_invulnerable = 0;
     puntaje = 0;
 
+    for (int i = 0; i < MAX_PROYECTILES; i++) {
+        proyectiles_enemigos[i].activo = false;
+        proyectiles_enemigos[i].es_enemigo = true;
+    }
+
     int yMax, xMax;
     getmaxyx(stdscr, yMax, xMax);
 
@@ -129,7 +134,10 @@ void ejecutar_partida(bool modo_guiado) {
     int idx_tutorial = 0;
     bool victoria = false;
     bool en_partida = true;
+    
+    int frame = 0;
     while (en_partida) {
+        frame++;
         werase(juego_win);
 
         dibujar_mapa(juego_win);
@@ -186,12 +194,17 @@ void ejecutar_partida(bool modo_guiado) {
 
         mvprintw(yMax - 2, (xMax - 50) / 2,
                  "Utiliza W, A, S, D para moverte y presiona Q para salir");
-        refresh();
-        wrefresh(juego_win);
+
+        pthread_mutex_lock(&mutex_jugador);
+        int vida_actual = vida_link;
+        pthread_mutex_unlock(&mutex_jugador);
+
+        move(yMax - 4, xMax / 2 - 40);
+        clrtoeol();
 
         wattron(stdscr, COLOR_PAIR(6));
         std::string corazones = "";
-        for (int i = 0; i < vida_link; i++) {
+        for (int i = 0; i < vida_actual; i++) {
             corazones += "<3 ";
         }
         mvprintw(yMax - 4, xMax / 2 - 40, "Vida: %s", corazones.c_str());
@@ -200,7 +213,9 @@ void ejecutar_partida(bool modo_guiado) {
         wattron(stdscr, COLOR_PAIR(4));
         mvprintw(yMax - 4, xMax / 2 + 26, "Puntaje: %d", puntaje);
         wattroff(stdscr, COLOR_PAIR(4));
-        
+        refresh();
+        wrefresh(juego_win);
+
         int tecla;
         if (modo_guiado) {
             usleep(200000);
@@ -225,6 +240,7 @@ void ejecutar_partida(bool modo_guiado) {
                     flecha.orientacion = link_char;
                     flecha.salon_pertenece = salon_actual;
                     flecha.activo = true;
+                    flecha.es_enemigo = false;
                     pthread_create(&hilo_flecha, NULL, mover_proyectil, (void*)&flecha);
                 }
                 break;
@@ -232,6 +248,9 @@ void ejecutar_partida(bool modo_guiado) {
         }
 
         if (!en_partida) break;
+
+        mvprintw(1, 1, "Vida actual: %d", vida_link);
+
         if (vida_link <= 0) {
             en_partida = false;
         }

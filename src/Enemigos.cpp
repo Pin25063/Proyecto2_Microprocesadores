@@ -33,6 +33,8 @@ void* mover_enemigo(void* arg) {
             dim_salon(alto, ancho);
 
             if (nuevaX < 0 || nuevaX >= ancho || nuevaY < 0 || nuevaY >= alto) {
+                enemigo->direccion = rand() % 4;
+                usleep(VELOCIDAD_ENEMIGOS);
                 continue;
             }
 
@@ -75,6 +77,7 @@ void* mover_enemigo(void* arg) {
                         proyectiles_enemigos[i].x = enemigo->x;
                         proyectiles_enemigos[i].y = enemigo->y;
                         proyectiles_enemigos[i].salon_pertenece = enemigo->salon_pertenece;
+                        proyectiles_enemigos[i].es_enemigo = true;
                         
                         if (direccion == 0) proyectiles_enemigos[i].orientacion = '^';
                         else if (direccion == 1) proyectiles_enemigos[i].orientacion = 'v';
