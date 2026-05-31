@@ -77,7 +77,10 @@ void ejecutar_partida(bool modo_guiado) {
         {10, 5, 'E', 3, true, rand() % 4, 12, 3},
         {20, 10, 'X', 3, true, rand() % 4, 13, 3},
         {8, 12, 'E', 3, true, rand() % 4, 14, 3},
-        {25, 4, 'X', 3, true, rand() % 4, 15, 3}
+        {25, 4, 'X', 3, true, rand() % 4, 15, 3},
+        
+        {15, 10, 'X', 4, true, rand() % 4, 16, 10}, 
+        {35, 10, 'X', 4, true, rand() % 4, 17, 3}
     };
     for (int i = 0; i < NUM_ENEMIGOS; i++) {
         enemigos[i] = enemigos_temp[i];
@@ -285,6 +288,12 @@ void ejecutar_partida(bool modo_guiado) {
                         sy = ALTO0 - 2;
                         ok = true;
                     }
+                    else if (nuevaY == ALTO3 - 1) {
+                        ns = 4;
+                        sx = 25; 
+                        sy = 1;
+                        ok = true;
+                    }
                     break;
             }
 
@@ -307,11 +316,13 @@ void ejecutar_partida(bool modo_guiado) {
             linkX = nuevaX;
             linkY = nuevaY;
             pthread_mutex_unlock(&mutex_jugador);
-            if (salon_actual == 3 && linkY == ALTO3 - 1) {
-                puntaje += 50;
+            
+            if (salon_actual == 4 && prox == 'V') {
+                puntaje += 100; // Bonus por pasarse el juego
                 victoria = true;
                 en_partida = false;
             }
+            
             if (salon_actual == 0 && linkX == 24 && linkY == 9 && !llave1_recogida) {
                 llave1_recogida = true;
                 tiene_llave1 = true;

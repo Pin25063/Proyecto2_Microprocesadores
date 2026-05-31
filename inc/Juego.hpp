@@ -45,7 +45,7 @@ extern int linkX;
 extern int linkY;
 extern bool link_recibe_dano;
 extern DatosProyectil proyectiles_enemigos[MAX_PROYECTILES];
-const int NUM_ENEMIGOS = 16;
+const int NUM_ENEMIGOS = 18;
 extern DatosEnemigo enemigos[NUM_ENEMIGOS];
 extern int puntaje;
 

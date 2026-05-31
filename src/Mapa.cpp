@@ -116,12 +116,37 @@ const std::string mapa3[ALTO3] = {
     "#                                                          #",
     "#########################         ##########################"
 };
+const int ALTO4 = 20, ANCHO4 = 50; 
+
+const std::string mapa4[ALTO4] = {
+    "################################|#################",
+    "#                                                #",
+    "#                                                #",
+    "#           ##########################           #",
+    "#           ##########################           #",
+    "#                                                #",
+    "#                                                #",
+    "#                                                #",
+    "#                                                #",
+    "#                                                #",
+    "#                                                #",
+    "#                                                #",
+    "#                                                #",
+    "#           ##########################           #",
+    "#           ##########################           #",
+    "#                                                #",
+    "#                                                #",
+    "#                                                #",
+    "#                                                #",
+    "######################VVVVVV######################" 
+};
 
 const std::string* mapa_ptr() {
     switch (salon_actual) {
         case 1:  return mapa1;
         case 2:  return mapa2;
         case 3:  return mapa3;
+        case 4:  return mapa4; 
         default: return mapa0;
     }
 }
@@ -131,6 +156,7 @@ void dim_salon(int& alto, int& ancho) {
         case 1:  alto = ALTO1; ancho = ANCHO1; return;
         case 2:  alto = ALTO2; ancho = ANCHO2; return;
         case 3:  alto = ALTO3; ancho = ANCHO3; return;
+        case 4:  alto = ALTO4; ancho = ANCHO4; return; 
         default: alto = ALTO0; ancho = ANCHO0;
     }
 }
